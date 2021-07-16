@@ -1,0 +1,58 @@
+{
+  "name": "tomer",
+  "version": "0.0.0",
+  "author": {
+    "name": "Tomer Aberbach",
+    "email": "tomeraberbach@gmail.com",
+    "url": "https://tomeraberba.ch"
+  },
+  "description": "Probably frobs some stuff.",
+  "keywords": [
+    "tomer"
+  ],
+  "homepage": "https://github.com/TomerAberbach/tomer",
+  "repository": "TomerAberbach/tomer",
+  "bugs": {
+    "url": "https://github.com/TomerAberbach/tomer/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">= 12.17"
+  },
+  "bin": "./src/index.js",
+  "scripts": {
+    "prepare": "node src/index.js install",
+    "lint": "node src/index.js lint"
+  },
+  "dependencies": {
+    "@commitlint/cli": "12.1.4",
+    "@commitlint/config-conventional": "12.1.4",
+    "@tomer/eslint-config": "0.2.1",
+    "@tomer/prettier-config": "0.2.0",
+    "ava": "3.15.0",
+    "builtin-modules": "3.2.0",
+    "bundt": "1.1.5",
+    "c8": "7.7.3",
+    "command-exists": "1.2.9",
+    "eslint": "7.30.0",
+    "eslint-formatter-pretty": "4.1.0",
+    "execa": "5.1.1",
+    "globby": "11.0.4",
+    "husky": "7.0.1",
+    "lfi": "0.1.0",
+    "lint-staged": "11.0.1",
+    "mem": "9.0.0",
+    "path-exists": "4.0.0",
+    "prettier": "2.3.2",
+    "rollup": "2.53.1",
+    "rollup-plugin-node-externals": "2.2.0",
+    "rollup-plugin-terser": "7.0.2",
+    "tsd": "0.17.0",
+    "widest-line": "4.0.0",
+    "yargs": "17.0.1"
+  }
+}
