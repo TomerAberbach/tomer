@@ -84,21 +84,26 @@ const lintFile = async ({ filename, parser }) => {
   const originalSource = await fs.readFile(filename, `utf8`)
   let source = originalSource
 
-  // Lint
   const results = []
-  if (parser === `babel`) {
-    const [result] = await eslint.lintText(source, { filePath: filename })
-    const { output = source } = result
-    source = output
 
-    results.push(result)
+  try {
+    // Lint
+    if (parser === `babel`) {
+      const [result] = await eslint.lintText(source, { filePath: filename })
+      const { output = source } = result
+      source = output
+
+      results.push(result)
+    }
+
+    // Format
+    source = prettier.format(source, {
+      ...prettierConfig,
+      parser,
+    })
+  } catch {
+    console.warn(`Couldn't lint ${filename}`)
   }
-
-  // Format
-  source = prettier.format(source, {
-    ...prettierConfig,
-    parser,
-  })
 
   if (source !== originalSource) {
     // Write
