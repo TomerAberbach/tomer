@@ -23,7 +23,7 @@ export const handler = async () => {
   await husky(`install`, gitHooksDirectory)
   await Promise.all(
     Object.entries(huskyConfig).map(([hook, script]) =>
-      husky(`add`, join(gitHooksDirectory, hook), script),
+      husky(`set`, join(gitHooksDirectory, hook), script),
     ),
   )
 }
