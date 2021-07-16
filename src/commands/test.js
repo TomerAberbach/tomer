@@ -2,6 +2,7 @@ import { join } from 'path'
 import execa from 'execa'
 import pathExists from 'path-exists'
 import { getProjectDirectory } from '../project.js'
+import rootPath from '../root.js'
 
 export const command = `test`
 
@@ -16,7 +17,10 @@ export const builder = yargs =>
   })
 
 const run = async command => {
-  const child = execa.command(command, { preferLocal: true })
+  const child = execa.command(command, {
+    preferLocal: true,
+    localDir: rootPath,
+  })
   child.stdout.pipe(process.stdout)
   child.stderr.pipe(process.stderr)
 

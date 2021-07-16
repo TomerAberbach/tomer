@@ -1,6 +1,7 @@
 import { join } from 'path'
 import execa from 'execa'
 import huskyConfig from '../configs/husky.js'
+import rootPath from '../root.js'
 
 const getGitHooksDirectory = async () => {
   const projectDirectory = (
@@ -9,7 +10,8 @@ const getGitHooksDirectory = async () => {
   return join(projectDirectory, `.git/hooks`)
 }
 
-const husky = (...args) => execa(`husky`, args, { preferLocal: true })
+const husky = (...args) =>
+  execa(`husky`, args, { preferLocal: true, localDir: rootPath })
 
 export const command = `install`
 
