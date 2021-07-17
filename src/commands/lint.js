@@ -63,7 +63,7 @@ const eslint = new ESLint({
 
 const expandGlobs = globs =>
   globby(globs, {
-    ignore: [`**/fixtures/**`, `**/pnpm-lock.yaml`],
+    ignore: [`**/node_modules/**`, `**/fixtures/**`, `**/pnpm-lock.yaml`],
     gitignore: true,
   })
 
