@@ -16,6 +16,7 @@ specifiers:
   husky: 7.0.1
   lfi: 0.1.0
   lint-staged: 11.0.1
+  maxmin: 4.0.0
   path-exists: 4.0.0
   prettier: 2.3.2
   rollup: 2.53.1
@@ -41,6 +42,7 @@ dependencies:
   husky: 7.0.1
   lfi: 0.1.0
   lint-staged: 11.0.1
+  maxmin: 4.0.0
   path-exists: 4.0.0
   prettier: 2.3.2
   rollup: 2.53.1
@@ -1256,6 +1258,10 @@ packages:
       is-obj: 2.0.0
     dev: false
 
+  /duplexer/0.1.2:
+    resolution: {integrity: sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==}
+    dev: false
+
   /duplexer3/0.1.4:
     resolution: {integrity: sha1-7gHdHKwO08vH/b6jfcCo8c4ALOI=}
     dev: false
@@ -1916,6 +1922,13 @@ packages:
 
   /graceful-fs/4.2.6:
     resolution: {integrity: sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==}
+    dev: false
+
+  /gzip-size/6.0.0:
+    resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
+    engines: {node: '>=10'}
+    dependencies:
+      duplexer: 0.1.2
     dev: false
 
   /hard-rejection/2.1.0:
@@ -2606,6 +2619,16 @@ packages:
       escape-string-regexp: 4.0.0
     dev: false
 
+  /maxmin/4.0.0:
+    resolution: {integrity: sha512-+PBstm8/IM6AFVGpOBqk7ddJHZu6KSGWDHQzncOQKAY6AlMgZC7dWS2Y2MrJll4rJZqWcF76g+zWCQn9lIsfEQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      chalk: 4.1.1
+      figures: 3.2.0
+      gzip-size: 6.0.0
+      pretty-bytes: 5.6.0
+    dev: false
+
   /md5-hex/3.0.1:
     resolution: {integrity: sha512-BUiRtTtV39LIJwinWBjqVsU9xhdnz7/i889V859IBFpuqGAj6LuOvHv5XLbgZ2R7ptJoJaEcxkv88/h25T7Ciw==}
     engines: {node: '>=8'}
@@ -3106,6 +3129,11 @@ packages:
     resolution: {integrity: sha512-lnJzDfJ66zkMy58OL5/NY5zp70S7Nz6KqcKkXYzn2tMVrNxvbqaBpg7H3qHaLxCJ5lNMsGuM8+ohS7cZrthdLQ==}
     engines: {node: '>=10.13.0'}
     hasBin: true
+    dev: false
+
+  /pretty-bytes/5.6.0:
+    resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
+    engines: {node: '>=6'}
     dev: false
 
   /pretty-ms/7.0.1:

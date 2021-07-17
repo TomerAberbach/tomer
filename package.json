@@ -44,6 +44,7 @@
     "husky": "7.0.1",
     "lfi": "0.1.0",
     "lint-staged": "11.0.1",
+    "maxmin": "4.0.0",
     "path-exists": "4.0.0",
     "prettier": "2.3.2",
     "rollup": "2.53.1",
