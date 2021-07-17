@@ -14,7 +14,7 @@ import {
   toArray,
 } from 'lfi'
 import commandExists from 'command-exists'
-import execa from 'execa'
+import { exec } from '../util.js'
 import prettierConfig from '../configs/prettier.js'
 import eslintConfig from '../configs/eslint.js'
 
@@ -125,16 +125,16 @@ const lint = filenames =>
 export const handler = async ({ globs, google }) => {
   const filenames = await expandGlobs(globs)
 
+  if (google && (await commandExists(`addlicense`))) {
+    await exec(`addlicense`, filenames)
+  }
+
   const [formatter, results] = await Promise.all([
     eslint.loadFormatter(`eslint-formatter-pretty`),
     lint(filenames),
   ])
 
   const output = formatter.format(results)
-
-  if (google && (await commandExists(`addlicense`))) {
-    await execa(`addlicense`, filenames)
-  }
 
   if (output.length === 0) {
     return

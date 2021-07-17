@@ -1,29 +1,20 @@
 import { join } from 'path'
-import execa from 'execa'
 import huskyConfig from '../configs/husky.js'
-import rootPath from '../root.js'
+import { exec } from '../util.js'
 
-const getGitHooksDirectory = async () => {
-  const projectDirectory = (
-    await execa.command(`git rev-parse --show-toplevel`)
-  ).stdout
-  return join(projectDirectory, `.git/hooks`)
-}
-
-const husky = (...args) =>
-  execa(`husky`, args, { preferLocal: true, localDir: rootPath })
+const husky = (...args) => exec(`husky`, args)
 
 export const command = `install`
 
 export const description = `Installs git hooks`
 
-export const handler = async () => {
-  const gitHooksDirectory = await getGitHooksDirectory()
+export const handler = async ({ projectDirectoryPath }) => {
+  const hooksDirectoryPath = join(projectDirectoryPath, `.git/hooks`)
 
-  await husky(`install`, gitHooksDirectory)
+  await husky(`install`, hooksDirectoryPath)
   await Promise.all(
     Object.entries(huskyConfig).map(([hook, script]) =>
-      husky(`set`, join(gitHooksDirectory, hook), script),
+      husky(`set`, join(hooksDirectoryPath, hook), script),
     ),
   )
 }

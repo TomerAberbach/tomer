@@ -1,6 +1,7 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import widestLine from 'widest-line'
+import middleware from './middleware.js'
 import commands from './commands/index.js'
 
 let usage = `
@@ -28,6 +29,7 @@ yargs(hideBin(process.argv))
   .alias(`h`, `help`)
   .version()
   .alias(`v`, `version`)
+  .middleware(middleware)
   .command(commands)
   .demandCommand()
   .parse()

@@ -2,7 +2,6 @@ import { join } from 'path'
 import { rollup } from 'rollup'
 import { terser } from 'rollup-plugin-terser'
 import externals from 'rollup-plugin-node-externals'
-import { getPackageJson, getProjectDirectory } from '../project.js'
 
 export const command = `build <entry>`
 
@@ -14,17 +13,14 @@ export const builder = yargs =>
 
 export const description = `Builds the code`
 
-export const handler = async ({ entry }) => {
+export const handler = async ({ entry, projectDirectoryPath, packageJson }) => {
   const bundle = await rollup({
     input: entry,
-    plugins: [
-      externals({ deps: true }),
-      terser((await getPackageJson()).terser || {}),
-    ],
+    plugins: [externals({ deps: true }), terser(packageJson.terser || {})],
   })
 
   await bundle.write({
-    file: join(await getProjectDirectory(), `dist/index.js`),
+    file: join(projectDirectoryPath, `dist/index.js`),
     format: `esm`,
   })
 }
