@@ -2,7 +2,7 @@ import { join, relative } from 'path'
 import { rootPath } from '../util.js'
 import { getConfigPath } from './index.js'
 
-const getBinPath = name => join(`node_modules/.bin`, name)
+const getBinPath = name => join(`node_modules/tomer/node_modules/.bin`, name)
 
 const getRelativeConfigPath = name => relative(rootPath, getConfigPath(name))
 
