@@ -1,16 +1,14 @@
-import { join, relative } from 'path'
+import { join } from 'path'
 import { rootPath } from '../util.js'
 import { getConfigPath } from './index.js'
 
-const getBinPath = name => join(`node_modules/tomer/node_modules/.bin`, name)
-
-const getRelativeConfigPath = name => relative(rootPath, getConfigPath(name))
+const getBinPath = name => join(rootPath, `node_modules/.bin`, name)
 
 const config = {
-  'commit-msg': `${getBinPath(`commitlint`)} --config ${getRelativeConfigPath(
+  'commit-msg': `${getBinPath(`commitlint`)} --config ${getConfigPath(
     `commitlint.json`,
   )} --edit "$1"`,
-  'pre-commit': `${getBinPath(`lint-staged`)} --config ${getRelativeConfigPath(
+  'pre-commit': `${getBinPath(`lint-staged`)} --config ${getConfigPath(
     `lint-staged.json`,
   )}`,
 }
