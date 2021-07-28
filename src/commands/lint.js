@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { promises as fs } from 'fs'
 import { ESLint } from 'eslint'
-import globby from 'globby'
+import { globby } from 'globby'
 import prettier from 'prettier'
 import {
   asConcur,
