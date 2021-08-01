@@ -7,14 +7,26 @@ import maxmin from 'maxmin'
 export const command = `build <entry>`
 
 export const builder = yargs =>
-  yargs.positional(`entry`, {
-    type: `string`,
-    description: `entry point to build`,
-  })
+  yargs
+    .positional(`entry`, {
+      type: `string`,
+      description: `entry point to build`,
+    })
+    .option(`deps`, {
+      alias: `d`,
+      type: `boolean`,
+      default: false,
+      description: `build dependencies`,
+    })
 
 export const description = `Builds the code`
 
-export const handler = async ({ entry, projectDirectoryPath, packageJson }) => {
+export const handler = async ({
+  entry,
+  deps,
+  projectDirectoryPath,
+  packageJson,
+}) => {
   let initialSize = 0
   let output
 
@@ -31,7 +43,7 @@ export const handler = async ({ entry, projectDirectoryPath, packageJson }) => {
           output = Object.values(bundle).find(({ isEntry }) => isEntry).code
         },
       },
-      externals({ deps: true }),
+      externals({ deps: !deps }),
       terser(packageJson.terser || {}),
     ],
   })
