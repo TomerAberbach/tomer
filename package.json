@@ -31,6 +31,7 @@
   "dependencies": {
     "@commitlint/cli": "13.1.0",
     "@commitlint/config-conventional": "13.1.0",
+    "@rollup/plugin-node-resolve": "13.0.4",
     "@tomer/eslint-config": "0.3.0",
     "@tomer/prettier-config": "0.2.0",
     "ava": "3.15.0",
