@@ -58,7 +58,6 @@ const eslint = new ESLint({
   errorOnUnmatchedPattern: false,
   fix: true,
   globInputPaths: false,
-  useEslintrc: false,
 })
 
 const expandGlobs = globs =>
