@@ -88,7 +88,8 @@ const lintFile = async ({ filename, parser }) => {
   try {
     // Lint
     if (parser === `babel`) {
-      const [result] = await eslint.lintText(source, { filePath: filename })
+      const [result] = await eslint.lintText(source)
+      result.filePath = filename
       const { output = source } = result
       source = output
 
