@@ -19,17 +19,31 @@ export const builder = yargs =>
       default: false,
       description: `build dependencies`,
     })
+    .options(`formats`, {
+      alias: `f`,
+      type: `string`,
+      choices: [`esm`, `cjs`, `esm,cjs`, `cjs,esm`],
+      default: `esm`,
+      coerce: formats => formats.split(`,`),
+    })
+    .option(`out`, {
+      alias: `o`,
+      type: `string`,
+      description: `output directory`,
+    })
 
 export const description = `Builds the code`
 
 export const handler = async ({
   entry,
   deps,
+  formats,
+  out,
   projectDirectoryPath,
   packageJson,
 }) => {
   let initialSize = 0
-  let output
+  const output = new Map()
 
   const bundle = await rollup({
     input: entry,
@@ -41,8 +55,11 @@ export const handler = async ({
           initialSize += code.length
           return code
         },
-        generateBundle(options, bundle) {
-          output = Object.values(bundle).find(({ isEntry }) => isEntry).code
+        generateBundle({ format }, bundle) {
+          output.set(
+            format === `es` ? `esm` : `cjs`,
+            Object.values(bundle).find(({ isEntry }) => isEntry).code,
+          )
         },
       },
       externals({ deps: !deps }),
@@ -50,10 +67,18 @@ export const handler = async ({
     ],
   })
 
-  await bundle.write({
-    file: join(projectDirectoryPath, `dist/index.js`),
-    format: `esm`,
-  })
+  out = out || join(projectDirectoryPath, `dist`)
 
-  console.log(maxmin(initialSize, output, true))
+  await Promise.all(
+    formats.map(format =>
+      bundle.write({
+        file: join(out, `index.${format === `cjs` ? `cjs` : `js`}`),
+        format,
+      }),
+    ),
+  )
+
+  for (const format of formats) {
+    console.log(`${format}: ${maxmin(initialSize, output.get(format), true)}`)
+  }
 }
