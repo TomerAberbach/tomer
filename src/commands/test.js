@@ -1,5 +1,5 @@
 import { join } from 'path'
-import pathExists from 'path-exists'
+import { pathExists } from 'path-exists'
 import { exec } from '../util.js'
 
 export const command = `test`
