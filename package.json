@@ -32,7 +32,7 @@
     "@commitlint/cli": "14.1.0",
     "@commitlint/config-conventional": "14.1.0",
     "@rollup/plugin-node-resolve": "13.0.6",
-    "@tomer/eslint-config": "0.4.0",
+    "@tomer/eslint-config": "0.4.1",
     "@tomer/prettier-config": "0.3.0",
     "ava": "3.15.0",
     "builtin-modules": "3.2.0",
