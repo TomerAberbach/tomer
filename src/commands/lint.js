@@ -42,7 +42,7 @@ export const builder = yargs =>
           map(extension => extension.substring(1)),
           join(`,`),
         )
-        return [`**/{${supportedFilenames},*.{${supportedExtensions}}}`]
+        return [`**/{${supportedFilenames}}`, `**/*.{${supportedExtensions}}`]
       },
       `**/*`,
     )
@@ -57,6 +57,7 @@ const eslint = new ESLint({
   baseConfig: eslintConfig,
   errorOnUnmatchedPattern: false,
   fix: true,
+
   globInputPaths: false,
 })
 
@@ -88,8 +89,9 @@ const lintFile = async ({ filename, parser }) => {
   try {
     // Lint
     if (parser === `babel`) {
-      const [result] = await eslint.lintText(source)
-      result.filePath = filename
+      const [result] = await eslint.lintText(source, { filePath: filename })
+
+      // Result.filePath = filename
       const { output = source } = result
       source = output
 

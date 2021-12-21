@@ -54,5 +54,8 @@
     "tsd": "0.18.0",
     "widest-line": "4.0.1",
     "yargs": "17.2.1"
+  },
+  "devDependencies": {
+    "tomer": "0.0.19"
   }
 }
