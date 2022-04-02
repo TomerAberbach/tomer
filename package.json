@@ -17,7 +17,8 @@
   },
   "license": "MIT",
   "files": [
-    "src"
+    "src",
+    "tsconfig.json"
   ],
   "type": "module",
   "engines": {
