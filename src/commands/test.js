@@ -1,38 +1,55 @@
-import { join } from 'path'
-import { pathExists } from 'path-exists'
-import { exec } from '../util.js'
+import isCI from 'is-ci'
+import { $, inherit } from '../helpers/command.js'
+import { hasLocalConfig } from '../helpers/config.js'
+import getBinPath from '../helpers/bin-path.js'
 
 export const command = `test`
 
-export const description = `Runs tests`
+export const description = `Runs tests using Jest!`
 
-export const builder = yargs =>
-  yargs
-    .option(`coverage`, {
-      alias: `c`,
-      type: `boolean`,
-      default: false,
-      description: `run with coverage`,
-    })
-    .option(`update-snapshots`, {
-      alias: `u`,
-      type: `boolean`,
-      default: false,
-      description: `update snapshots`,
-    })
+export async function handler({ _: [, ...jestArgs] }) {
+  process.env.BABEL_ENV = `test`
+  process.env.NODE_ENV = `test`
+  process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings`
 
-export const handler = async ({
-  coverage,
-  'update-snapshots': updateSnaphots,
-  projectDirectoryPath,
-}) => {
-  await exec(
-    `${coverage ? `c8 ava` : `ava`} -T 1m --color ${
-      updateSnaphots ? `--update-snapshots` : ``
-    }`,
+  const jestArgsSet = new Set(jestArgs)
+
+  const [binPath, configArgs] = await Promise.all([
+    getBinPath(`jest`),
+    getConfigArgs(jestArgsSet),
+  ])
+
+  await inherit(
+    $`node --expose-gc --allow-natives-syntax ${binPath} ${getWatchArgs(
+      jestArgsSet,
+    )} ${configArgs} ${jestArgs}`,
   )
+}
 
-  if (await pathExists(join(projectDirectoryPath, `test-d`))) {
-    await exec(`tsd`)
+function getWatchArgs(jestArgsSet) {
+  if (
+    isCI ||
+    jestArgsSet.has(`--no-watch`) ||
+    jestArgsSet.has(`--coverage`) ||
+    jestArgsSet.has(`--updateSnapshot`)
+  ) {
+    return []
   }
+
+  return [`--watch`]
+}
+
+async function getConfigArgs(jestArgsSet) {
+  if (
+    jestArgsSet.has(`--config`) ||
+    jestArgsSet.has(`-c`) ||
+    (await hasLocalConfig(`jest`))
+  ) {
+    return []
+  }
+
+  return [
+    `--config`,
+    JSON.stringify((await import(`../configs/jest.mjs`)).default),
+  ]
 }

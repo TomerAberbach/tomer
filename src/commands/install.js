@@ -1,20 +1,28 @@
-import { join } from 'path'
-import huskyConfig from '../configs/husky.js'
-import { exec } from '../util.js'
-
-const husky = (...args) => exec(`husky`, args)
+import { $, inherit } from '../helpers/command.js'
+import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
 
 export const command = `install`
 
-export const description = `Installs git hooks`
+export const description = `Installs git hooks using simple-git-hooks!`
 
-export const handler = async ({ projectDirectoryPath }) => {
-  const hooksDirectoryPath = join(projectDirectoryPath, `.git/hooks`)
+export async function handler({ _: [, ...simpleGitHooksArgs] }) {
+  const simpleGitHooksArgsSet = new Set(simpleGitHooksArgs)
 
-  await husky(`install`, hooksDirectoryPath)
-  await Promise.all(
-    Object.entries(huskyConfig).map(([hook, script]) =>
-      husky(`set`, join(hooksDirectoryPath, hook), script),
-    ),
+  await inherit(
+    $`simple-git-hooks ${[
+      ...(await getConfigArgs(simpleGitHooksArgsSet)),
+      ...simpleGitHooksArgs,
+    ]}`,
   )
+}
+
+async function getConfigArgs(simpleGitHooksArgsSet) {
+  if (
+    simpleGitHooksArgsSet.size > 0 ||
+    (await hasLocalConfig(`simple-git-hooks`))
+  ) {
+    return []
+  }
+
+  return [getConfigPath(`simple-git-hooks.json`)]
 }

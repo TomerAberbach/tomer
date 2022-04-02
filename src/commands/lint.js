@@ -1,147 +1,97 @@
-import { resolve } from 'path'
-import { promises as fs } from 'fs'
-import { ESLint } from 'eslint'
-import { globby } from 'globby'
-import prettier from 'prettier'
-import {
-  asConcur,
-  pipe,
-  flatMap,
-  join,
-  map,
-  flatMapConcur,
-  collectConcur,
-  toArray,
-} from 'lfi'
-import commandExists from 'command-exists'
-import { exec } from '../util.js'
-import prettierConfig from '../configs/prettier.js'
-import eslintConfig from '../configs/eslint.js'
+import { fromProjectDirectory, hasLocalFile } from '../helpers/local.js'
+import { $, inherit } from '../helpers/command.js'
+import { SRC_EXTENSIONS } from '../helpers/matches.js'
+import { hasPackageJsonProperty } from '../helpers/package-json.js'
+import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
+import resolveImport from '../helpers/resolve-import.js'
 
-export const command = `lint [globs..]`
+export const command = `lint`
 
-export const description = `Lints and formats files`
+export const description = `Lints code using ESLint!`
 
-export const builder = yargs =>
-  yargs
-    .positional(`globs`, {
-      type: `string`,
-      description: `glob patterns of files to lint`,
-    })
-    .default(
-      `globs`,
-      () => {
-        const supportedFilenames = pipe(
-          prettier.getSupportInfo().languages,
-          flatMap(({ filenames = [] }) => filenames),
-          join(`,`),
-        )
-        const supportedExtensions = pipe(
-          prettier.getSupportInfo().languages,
-          flatMap(({ extensions = [] }) => extensions),
-          map(extension => extension.substring(1)),
-          join(`,`),
-        )
-        return [`**/{${supportedFilenames}}`, `**/*.{${supportedExtensions}}`]
-      },
-      `**/*`,
-    )
-    .option(`google`, {
-      alias: `g`,
-      type: `boolean`,
-      default: false,
-      description: `add Google license`,
-    })
+export async function handler({ _: [, ...eslintArgs], '--': globs = [] }) {
+  const eslintArgsSet = new Set(eslintArgs)
 
-const eslint = new ESLint({
-  baseConfig: eslintConfig,
-  errorOnUnmatchedPattern: false,
-  fix: true,
-
-  globInputPaths: false,
-})
-
-const expandGlobs = globs =>
-  globby(globs, {
-    ignore: [`**/node_modules/**`, `**/fixtures/**`, `**/pnpm-lock.yaml`],
-    gitignore: true,
-  })
-
-const getFileMetadata = async filename => {
-  const { inferredParser } = await prettier.getFileInfo(filename)
-  return inferredParser == null
-    ? []
-    : [
-        {
-          filename: resolve(process.cwd(), filename),
-          parser: inferredParser,
-        },
-      ]
-}
-
-const lintFile = async ({ filename, parser }) => {
-  // Read
-  const originalSource = await fs.readFile(filename, `utf8`)
-  let source = originalSource
-
-  const results = []
-
-  try {
-    // Lint
-    if (parser === `babel`) {
-      const [result] = await eslint.lintText(source, { filePath: filename })
-
-      // Result.filePath = filename
-      const { output = source } = result
-      source = output
-
-      results.push(result)
-    }
-
-    // Format
-    source = prettier.format(source, {
-      ...prettierConfig,
-      parser,
-    })
-  } catch {
-    console.warn(`Couldn't lint ${filename}`)
-  }
-
-  if (source !== originalSource) {
-    // Write
-    await fs.writeFile(filename, source)
-  }
-
-  // Report
-  return results
-}
-
-const lint = filenames =>
-  pipe(
-    asConcur(filenames),
-    flatMapConcur(getFileMetadata),
-    flatMapConcur(lintFile),
-    collectConcur(toArray),
-  )
-
-export const handler = async ({ globs, google }) => {
-  const filenames = await expandGlobs(globs)
-
-  if (google && (await commandExists(`addlicense`))) {
-    await exec(`addlicense`, filenames)
-  }
-
-  const [formatter, results] = await Promise.all([
-    eslint.loadFormatter(`eslint-formatter-pretty`),
-    lint(filenames),
+  const [configArgs, ignorePathArgs, cacheArgs] = await Promise.all([
+    getConfigArgs(eslintArgsSet),
+    getIgnorePathArgs(eslintArgsSet),
+    getCacheArgs(eslintArgsSet),
   ])
 
-  const output = formatter.format(results)
+  await inherit(
+    $`eslint ${[
+      ...configArgs,
+      ...ignorePathArgs,
+      ...getExtArgs(eslintArgsSet),
+      ...cacheArgs,
+      ...getFormatArgs(eslintArgsSet),
+      ...getFixArgs(eslintArgsSet),
+      ...eslintArgs,
+      ...(globs.length > 0 ? globs : [`.`]),
+    ]}`,
+  )
+}
 
-  if (output.length === 0) {
-    return
+async function getConfigArgs(eslintArgsSet) {
+  if (
+    eslintArgsSet.has(`--config`) ||
+    eslintArgsSet.has(`-c`) ||
+    (!eslintArgsSet.has(`--no-eslintrc`) && (await hasLocalConfig(`eslint`)))
+  ) {
+    return []
   }
 
-  process.stdout.write(output)
-  process.exit(1)
+  const configPath = await resolveImport(
+    `@tomer/eslint-config`,
+    import.meta.url,
+  )
+  return [`--config`, configPath]
+}
+
+async function getIgnorePathArgs(eslintArgsSet) {
+  if (
+    eslintArgsSet.has(`--no-ignore`) ||
+    eslintArgsSet.has(`--ignore-path`) ||
+    (await hasPackageJsonProperty(`eslintIgnore`)) ||
+    (await hasLocalFile(`.eslintignore`))
+  ) {
+    return []
+  }
+
+  return [
+    `--ignore-path`,
+    (await hasLocalFile(`.gitignore`))
+      ? await fromProjectDirectory(`.gitignore`)
+      : getConfigPath(`ignore`),
+  ]
+}
+
+function getExtArgs(eslintArgsSet) {
+  return eslintArgsSet.has(`--ext`) ? [] : [`--ext`, SRC_EXTENSIONS.join(`,`)]
+}
+
+async function getCacheArgs(eslintArgsSet) {
+  if (eslintArgsSet.has(`--no-cache`)) {
+    return []
+  }
+
+  return [
+    eslintArgsSet.has(`--cache`) && [`--cache`],
+    eslintArgsSet.has(`--cache-location`) && [
+      `--cache-location`,
+      await fromProjectDirectory(`node_modules/.cache/.eslintcache`),
+    ],
+  ].filter(Boolean)
+}
+
+function getFormatArgs(eslintArgsSet) {
+  return eslintArgsSet.has(`--format`) ? [] : [`--format`, `pretty`]
+}
+
+function getFixArgs(eslintArgsSet) {
+  if (eslintArgsSet.has(`--fix`) || eslintArgsSet.has(`--fix-dry-run`)) {
+    return []
+  }
+
+  return [`--fix`]
 }
