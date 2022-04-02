@@ -104,6 +104,6 @@
     "zx": "^6.0.7"
   },
   "devDependencies": {
-    "tomer": "^0.1.0"
+    "tomer": "^0.1.1"
   }
 }

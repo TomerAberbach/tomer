@@ -54,7 +54,7 @@ specifiers:
   rollup-plugin-terser: ^7.0.2
   semver: ^7.3.5
   simple-git-hooks: github:TomerAberbach/simple-git-hooks
-  tomer: ^0.1.0
+  tomer: ^0.1.1
   typescript: ^4.7.0-dev.20220402
   widest-line: ^4.0.1
   yargs: ^17.4.0
@@ -120,7 +120,7 @@ dependencies:
   zx: 6.0.7
 
 devDependencies:
-  tomer: 0.1.0
+  tomer: 0.1.1
 
 packages:
   /@ampproject/remapping/2.1.2:
@@ -8911,10 +8911,10 @@ packages:
     dependencies:
       is-number: 7.0.0
 
-  /tomer/0.1.0:
+  /tomer/0.1.1:
     resolution:
       {
-        integrity: sha512-ZqosCNz9lcZMXOQmQkElww+4HtdUCloEWkJPzCQG7PpeTLimAyy/3Gyz0nWCmp7SvIdbGv4J0JT778E3Xsaw1w==,
+        integrity: sha512-kTFziGzTy8tH1Sh4VVpJq6M0eDUZIBVIle6bToSDGjatj/6q9tvk+9MGD+82JevVi5k/JpPSumUk5r+CQ99ztg==,
       }
     engines: { node: '>= 16' }
     hasBin: true
