@@ -1,4 +1,4 @@
-import { dirname, join } from 'path'
+import { dirname, isAbsolute, join } from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs/promises'
 import resolve from 'resolve'
@@ -12,6 +12,11 @@ export default async function getBinPath(packageName) {
     ),
   )
   const { bin } = JSON.parse(await fs.readFile(packageJsonPath, `utf8`))
+
+  if (isAbsolute(bin)) {
+    return bin
+  }
+
   return join(dirname(packageJsonPath), bin)
 }
 
