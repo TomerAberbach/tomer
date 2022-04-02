@@ -39,6 +39,9 @@ async function getJestConfig() {
   return {
     roots: [join(`<rootDir>`, src), join(`<rootDir>`, test)],
     extensionsToTreatAsEsm: [`.ts`],
+    moduleNameMapper: {
+      '^(\\.{1,2}/.*)\\.js$': `$1`,
+    },
     testEnvironment: browserslistConfig ? `jsdom` : `node`,
     moduleFileExtensions: SRC_EXTENSIONS,
     collectCoverageFrom: [
