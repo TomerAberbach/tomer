@@ -89,7 +89,11 @@ function getFormatArgs(eslintArgsSet) {
 }
 
 function getFixArgs(eslintArgsSet) {
-  if (eslintArgsSet.has(`--fix`) || eslintArgsSet.has(`--fix-dry-run`)) {
+  if (
+    eslintArgsSet.has(`--no-fix`) ||
+    eslintArgsSet.has(`--fix`) ||
+    eslintArgsSet.has(`--fix-dry-run`)
+  ) {
     return []
   }
 
