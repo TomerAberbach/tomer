@@ -16,6 +16,7 @@ async function getJestConfig() {
       jestWatchTypeaheadFilename,
       jestWatchTypeaheadTestname,
       jestSerializerPath,
+      jestResolverPath,
     ],
     [{ src, test }, setupFilesAfterEnv],
     transform,
@@ -37,6 +38,7 @@ async function getJestConfig() {
   ]
 
   return {
+    resolver: jestResolverPath,
     roots: [join(`<rootDir>`, src), join(`<rootDir>`, test)],
     extensionsToTreatAsEsm: [`.ts`],
     moduleNameMapper: {
@@ -73,6 +75,7 @@ function getJestPluginsImports() {
         `jest-watch-typeahead/filename`,
         `jest-watch-typeahead/testname`,
         `jest-serializer-path`,
+        `./jest-resolver.cjs`,
       ],
     ),
   )
