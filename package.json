@@ -103,6 +103,6 @@
     "zx": "^6.0.7"
   },
   "devDependencies": {
-    "tomer": "^0.1.6"
+    "tomer": "^0.1.7"
   }
 }

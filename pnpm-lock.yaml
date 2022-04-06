@@ -53,7 +53,7 @@ specifiers:
   rollup-plugin-terser: ^7.0.2
   semver: ^7.3.6
   simple-git-hooks: github:TomerAberbach/simple-git-hooks
-  tomer: ^0.1.6
+  tomer: ^0.1.7
   typescript: ^4.7.0-dev.20220406
   widest-line: ^4.0.1
   yargs: ^17.4.0
@@ -118,7 +118,7 @@ dependencies:
   zx: 6.0.7
 
 devDependencies:
-  tomer: 0.1.6
+  tomer: 0.1.7
 
 packages:
   /@ampproject/remapping/2.1.2:
@@ -4216,16 +4216,6 @@ packages:
         integrity: sha512-eefv9TngSxMW4VOn7XWCCDHZRjQuJrJo/bJzwFK9JI3AcfTRIH1WMMUQwt9fO84BzxuCQ3GxQfiH2Js/u6iAfg==,
       }
     engines: { node: '>= 12.17' }
-
-  /binode/1.0.5:
-    resolution:
-      {
-        integrity: sha512-jc+6FIDNS2yCSaPuIsCupzMnMoWMhOusvGtyxETm2ondXO5LbLpPJoWo1pmyluOtfcYOPtdUOozVSWUN6mVyxQ==,
-      }
-    hasBin: true
-    dependencies:
-      resolve: 1.22.0
-    dev: true
 
   /brace-expansion/1.1.11:
     resolution:
@@ -8917,10 +8907,10 @@ packages:
     dependencies:
       is-number: 7.0.0
 
-  /tomer/0.1.6:
+  /tomer/0.1.7:
     resolution:
       {
-        integrity: sha512-Gn8JWUsYwv1ffpy5RX74oA9HuG/daVJvDKCLNUWYuTq6oZcFBxMzdVBFYJt1KGEtx6/Js52KA5Wo7qUksosvxA==,
+        integrity: sha512-B51hbTSVVSQnJZO6Y72HnTQktKn4aiqW6izl3xwc7ZrVZU/T/Wai5tnE3L9y5Dh4f7qYYP0ubpCk3ypU+E9MCQ==,
       }
     engines: { node: '>= 16' }
     hasBin: true
@@ -8942,7 +8932,6 @@ packages:
       '@types/jest': 27.4.1
       '@types/node': 17.0.23
       babel-jest: 27.5.1_@babel+core@7.17.9
-      binode: 1.0.5
       browserslist: 4.20.2
       cosmiconfig: 7.0.1
       cross-env: 7.0.3
