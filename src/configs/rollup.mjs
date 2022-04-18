@@ -187,12 +187,12 @@ async function getPlugins({
 }
 
 function reportSizes() {
-  let initialCode
+  let initialCode = ``
 
   return {
     name: `report-sizes`,
     transform(code) {
-      initialCode = initialCode ?? code
+      initialCode += code
       return code
     },
     generateBundle({ file }, bundle) {
