@@ -7,7 +7,7 @@ import {
   hasLocalConfig,
 } from '../helpers/config.js'
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
-import { hasLocalFile } from '../helpers/local.js'
+import { getProjectDirectory, hasLocalFile } from '../helpers/local.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 async function getJestConfig() {
@@ -34,6 +34,7 @@ async function getJestConfig() {
     `/node_modules/`,
     `/fixtures/`,
     `/${test}/helpers/`,
+    ...setupFilesAfterEnv,
   ]
 
   return {
@@ -84,7 +85,7 @@ async function getJestSetupFilesAfterEnv({ test }) {
     map(extension => join(test, `setup-env.${extension}`)),
     asConcur,
     findConcur(hasLocalFile),
-    mapConcur(path => [path]),
+    mapConcur(async path => [join(await getProjectDirectory(), path)]),
     orConcur(() => []),
   )
 
