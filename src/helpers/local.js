@@ -3,7 +3,7 @@ import { constants, promises as fs } from 'fs'
 import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import etz from 'etz'
 import pMemoize from 'p-memoize'
-import { $, nothrow } from './command.js'
+import { $ } from './command.js'
 
 export async function hasLocalFile(path) {
   const localPath = await fromProjectDirectory(path)
@@ -36,9 +36,9 @@ export const getProjectDirectory = pMemoize(async () => {
 })
 
 async function getGitDirectory() {
-  return (await nothrow($`git rev-parse --show-toplevel`)).stdout.trim()
+  return (await $`git rev-parse --show-toplevel`.nothrow()).stdout.trim()
 }
 
 async function getNpmPrefix() {
-  return (await nothrow($`npm prefix`)).stdout.trim()
+  return (await $`npm prefix`.nothrow()).stdout.trim()
 }

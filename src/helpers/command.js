@@ -1,4 +1,4 @@
-import { $, nothrow } from 'zx'
+import { $ } from 'zx'
 
 $.verbose = false
 
@@ -9,4 +9,4 @@ export async function inherit(processPromise) {
   process.exit(await processPromise.exitCode)
 }
 
-export { $, nothrow }
+export { $ }
