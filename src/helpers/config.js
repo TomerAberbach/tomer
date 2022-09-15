@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig'
 import browserslist from 'browserslist'
 import pMemoize from 'p-memoize'
+import { collect, concat, map, pipe, toObject } from 'lfi'
 import { getPackageJsonPath } from './package-json.js'
 import { getProjectDirectory, hasLocalFile } from './local.js'
 
@@ -40,11 +41,11 @@ export async function hasLocalConfig(moduleName) {
         `${moduleName}.config.mjs`,
       ],
       packageProp: [moduleName, `${moduleName}Config`],
-      loaders: {
-        ...defaultLoaders,
-        '.ts': defaultLoaders[`.js`],
-        '.mjs': defaultLoaders[`.js`],
-      },
+      loaders: pipe(
+        concat(Object.keys(defaultLoaders), [`.ts`, `.mjs`]),
+        map(ext => [ext, () => true]),
+        collect(toObject),
+      ),
     }).search(await getPackageJsonPath()),
   )
 }
