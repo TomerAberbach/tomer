@@ -13,7 +13,7 @@ export default {
   [`*.{${SRC_EXTENSIONS.join(`,`)}}`]: [
     `tomer lint --`,
     hasTypes && `tomer typecheck --`,
-    hasTest && `tomer test --findRelatedTests --no-watch`,
+    hasTest && `tomer test --findRelatedTests --no-watch --passWithNoTests`,
   ].filter(Boolean),
   '*': [`tomer format --`, useAddlicense && `addlicense`].filter(Boolean),
 }
