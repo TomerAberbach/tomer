@@ -1,5 +1,4 @@
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
+import { join } from 'path'
 import { asConcur, findConcur, map, mapConcur, orConcur, pipe } from 'lfi'
 import {
   getBrowserslistConfig,
@@ -89,14 +88,8 @@ async function getJestSetupFilesAfterEnv({ test }) {
     orConcur(() => []),
   )
 
-  return [
-    `jest-extended/all`,
-    join(__dirname, `../fast-check-setup.js`),
-    ...setupFilesAfterEnv,
-  ]
+  return [`jest-extended/all`, ...setupFilesAfterEnv]
 }
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
 
 async function getJestTransform() {
   if (await hasLocalConfig(`babel`)) {
