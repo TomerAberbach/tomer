@@ -1,1 +1,10 @@
-export const SRC_EXTENSIONS = [`js`, `cjs`, `mjs`, `ts`, `jsx`, `tsx`]
+export const SRC_EXTENSIONS = [
+  `js`,
+  `cjs`,
+  `mjs`,
+  `ts`,
+  `cts`,
+  `mts`,
+  `jsx`,
+  `tsx`,
+]

@@ -1,6 +1,5 @@
 import { fromProjectDirectory, hasLocalFile } from '../helpers/local.js'
 import { $, inherit } from '../helpers/command.js'
-import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import { hasPackageJsonProperty } from '../helpers/package-json.js'
 import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
 import resolveImport from '../helpers/resolve-import.js'
@@ -12,19 +11,21 @@ export const description = `Lints code using ESLint!`
 export async function handler({ _: [, ...eslintArgs], '--': globs = [] }) {
   const eslintArgsSet = new Set(eslintArgs)
 
-  const [configArgs, ignorePathArgs, cacheArgs] = await Promise.all([
-    getConfigArgs(eslintArgsSet),
-    getIgnorePathArgs(eslintArgsSet),
-    getCacheArgs(eslintArgsSet),
-  ])
+  const [configArgs, ignorePathArgs, cacheArgs, formatArgs] = await Promise.all(
+    [
+      getConfigArgs(eslintArgsSet),
+      getIgnorePathArgs(eslintArgsSet),
+      getCacheArgs(eslintArgsSet),
+      getFormatArgs(eslintArgsSet),
+    ],
+  )
 
   await inherit(
     $`eslint ${[
       ...configArgs,
       ...ignorePathArgs,
-      ...getExtArgs(eslintArgsSet),
       ...cacheArgs,
-      ...getFormatArgs(eslintArgsSet),
+      ...formatArgs,
       ...getFixArgs(eslintArgsSet),
       ...eslintArgs,
       ...(globs.length > 0 ? globs : [`.`]),
@@ -36,7 +37,8 @@ async function getConfigArgs(eslintArgsSet) {
   if (
     eslintArgsSet.has(`--config`) ||
     eslintArgsSet.has(`-c`) ||
-    (!eslintArgsSet.has(`--no-eslintrc`) && (await hasLocalConfig(`eslint`)))
+    (!eslintArgsSet.has(`--no-config-lookup`) &&
+      (await hasLocalConfig(`eslint`)))
   ) {
     return []
   }
@@ -66,10 +68,6 @@ async function getIgnorePathArgs(eslintArgsSet) {
   ]
 }
 
-function getExtArgs(eslintArgsSet) {
-  return eslintArgsSet.has(`--ext`) ? [] : [`--ext`, SRC_EXTENSIONS.join(`,`)]
-}
-
 async function getCacheArgs(eslintArgsSet) {
   if (eslintArgsSet.has(`--no-cache`)) {
     return []
@@ -84,8 +82,13 @@ async function getCacheArgs(eslintArgsSet) {
   ].filter(Boolean)
 }
 
-function getFormatArgs(eslintArgsSet) {
-  return eslintArgsSet.has(`--format`) ? [] : [`--format`, `pretty`]
+async function getFormatArgs(eslintArgsSet) {
+  return eslintArgsSet.has(`--format`)
+    ? []
+    : [
+        `--format`,
+        await resolveImport(`eslint-formatter-pretty`, import.meta.url),
+      ]
 }
 
 function getFixArgs(eslintArgsSet) {
