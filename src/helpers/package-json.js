@@ -21,6 +21,9 @@ export async function hasPackageJsonProperty(property) {
   return Boolean((await getPackageJson())[property])
 }
 
+export const getIsTypeModule = async () =>
+  (await getPackageJson()).type === `module`
+
 export const getPackageJson = pMemoize(async () =>
   JSON.parse(await fs.readFile(await getPackageJsonPath(), `utf8`)),
 )
