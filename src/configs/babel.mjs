@@ -11,6 +11,7 @@ async function getBabelConfig() {
     babelPresetTypeScript,
     babelPresetReact,
     browserslistConfig,
+    packageJson,
   ] = await Promise.all([
     ...map(
       specifier =>
@@ -20,6 +21,7 @@ async function getBabelConfig() {
       [`@babel/preset-env`, getBabelPresetTypeScript(), getBabelPresetReact()],
     ),
     getResolvedBrowserslistConfig(),
+    getPackageJson(),
   ])
 
   return {
@@ -30,13 +32,13 @@ async function getBabelConfig() {
       [
         babelPresetEnv,
         {
-          modules: false,
+          modules: packageJson.type === `module` ? false : `cjs`,
           loose: true,
           targets: browserslistConfig,
         },
       ],
       babelPresetTypeScript,
-      babelPresetReact,
+      [babelPresetReact, { runtime: `automatic` }],
     ].filter(Boolean),
   }
 }

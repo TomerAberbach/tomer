@@ -1,4 +1,5 @@
 import { join } from 'path'
+import { createRequire } from 'module'
 import { asConcur, findConcur, map, mapConcur, orConcur, pipe } from 'lfi'
 import {
   getBrowserslistConfig,
@@ -8,6 +9,8 @@ import {
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import { getProjectDirectory, hasLocalFile } from '../helpers/local.js'
 import resolveImport from '../helpers/resolve-import.js'
+
+const require = createRequire(import.meta.url)
 
 async function getJestConfig() {
   const [
@@ -88,7 +91,7 @@ async function getJestSetupFilesAfterEnv({ test }) {
     orConcur(() => []),
   )
 
-  return [`jest-extended/all`, ...setupFilesAfterEnv]
+  return [require.resolve(`jest-extended/all`), ...setupFilesAfterEnv]
 }
 
 async function getJestTransform() {

@@ -57,6 +57,10 @@ export const getBrowserslistConfig = pMemoize(async () =>
 )
 
 export async function getHasTypes() {
+  if (await hasLocalFile(`tsconfig.json`)) {
+    return true
+  }
+
   const { tsInput, dtsInput } = await getTomerConfig()
   return Boolean(tsInput || dtsInput)
 }
