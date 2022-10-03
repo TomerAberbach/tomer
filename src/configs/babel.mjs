@@ -38,7 +38,7 @@ async function getBabelConfig() {
         },
       ],
       babelPresetTypeScript,
-      [babelPresetReact, { runtime: `automatic` }],
+      babelPresetReact && [babelPresetReact, { runtime: `automatic` }],
     ].filter(Boolean),
   }
 }
