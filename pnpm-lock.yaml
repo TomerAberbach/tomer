@@ -13,7 +13,7 @@ specifiers:
   '@rollup/plugin-commonjs': ^22.0.2
   '@rollup/plugin-json': ^4.1.0
   '@rollup/plugin-node-resolve': ^14.1.0
-  '@tomer/eslint-config': ^0.5.7
+  '@tomer/eslint-config': ^0.5.8
   '@tomer/prettier-config': ^0.3.0
   '@tsconfig/recommended': ^1.0.1
   '@types/node': ^18.7.19
@@ -71,7 +71,7 @@ dependencies:
   '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
   '@rollup/plugin-json': 4.1.0_rollup@2.79.1
   '@rollup/plugin-node-resolve': 14.1.0_rollup@2.79.1
-  '@tomer/eslint-config': 0.5.7_r3vbpokjqzbuinnjboamsudtlm
+  '@tomer/eslint-config': 0.5.8_r3vbpokjqzbuinnjboamsudtlm
   '@tomer/prettier-config': 0.3.0_prettier@2.7.1
   '@tsconfig/recommended': 1.0.1
   '@types/node': 18.7.19
@@ -3444,10 +3444,10 @@ packages:
     dependencies:
       '@sinonjs/commons': 1.8.3
 
-  /@tomer/eslint-config/0.5.7_r3vbpokjqzbuinnjboamsudtlm:
+  /@tomer/eslint-config/0.5.8_r3vbpokjqzbuinnjboamsudtlm:
     resolution:
       {
-        integrity: sha512-rIdaCwTlS33/xruTI5LXnxVyFbl3U9gXza14FIaYo0aHdZXC8+dw6U0eru1y8sI4meUB9QGiWcZv60evdNXJWQ==,
+        integrity: sha512-Jt0sKKmhgokm9Dc8MKnwFAUaJmpR2+Akz4OgMohoF6EOO0JZhU8QMlxHwhqNBw7QxeZiylvVFVEDX9fvgwWiGg==,
       }
     engines: { node: '>= 12.17' }
     peerDependencies:
@@ -7594,7 +7594,10 @@ packages:
       }
 
   /lodash.memoize/4.1.2:
-    resolution: { integrity: sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4= }
+    resolution:
+      {
+        integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==,
+      }
     optional: true
 
   /lodash.merge/4.6.2:
@@ -9360,7 +9363,7 @@ packages:
       '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
       '@rollup/plugin-json': 4.1.0_rollup@2.79.1
       '@rollup/plugin-node-resolve': 13.3.0_rollup@2.79.1
-      '@tomer/eslint-config': 0.5.7_r3vbpokjqzbuinnjboamsudtlm
+      '@tomer/eslint-config': 0.5.8_r3vbpokjqzbuinnjboamsudtlm
       '@tomer/prettier-config': 0.3.0_prettier@2.7.1
       '@tsconfig/recommended': 1.0.1
       '@types/node': 18.7.19

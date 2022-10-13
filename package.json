@@ -57,7 +57,7 @@
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^14.1.0",
-    "@tomer/eslint-config": "^0.5.7",
+    "@tomer/eslint-config": "^0.5.8",
     "@tomer/prettier-config": "^0.3.0",
     "@tsconfig/recommended": "^1.0.1",
     "@types/node": "^18.7.19",
