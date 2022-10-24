@@ -6,9 +6,6 @@
   <a href="https://npmjs.org/package/tomer">
     <img src="https://badgen.now.sh/npm/v/tomer" alt="version" />
   </a>
-  <a href="https://bundlephobia.com/result?p=tomer">
-    <img src="https://badgen.net/bundlephobia/minzip/tomer" alt="minzip size" />
-  </a>
 </div>
 
 <div align="center">
