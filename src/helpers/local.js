@@ -5,7 +5,7 @@ import etz from 'etz'
 import pMemoize from 'p-memoize'
 import { $ } from './command.js'
 
-export async function hasLocalFile(path) {
+export const hasLocalFile = async path => {
   const localPath = await fromProjectDirectory(path)
 
   try {
@@ -17,9 +17,8 @@ export async function hasLocalFile(path) {
   return true
 }
 
-export async function fromProjectDirectory(...paths) {
-  return join(await getProjectDirectory(), ...paths)
-}
+export const fromProjectDirectory = async (...paths) =>
+  join(await getProjectDirectory(), ...paths)
 
 export const getProjectDirectory = pMemoize(async () => {
   const projectDirectory =
@@ -35,10 +34,7 @@ export const getProjectDirectory = pMemoize(async () => {
   return resolve(projectDirectory)
 })
 
-async function getGitDirectory() {
-  return (await $`git rev-parse --show-toplevel`.nothrow()).stdout.trim()
-}
+const getGitDirectory = async () =>
+  (await $`git rev-parse --show-toplevel`.nothrow()).stdout.trim()
 
-async function getNpmPrefix() {
-  return (await $`npm prefix`.nothrow()).stdout.trim()
-}
+const getNpmPrefix = async () => (await $`npm prefix`.nothrow()).stdout.trim()

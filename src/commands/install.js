@@ -5,7 +5,7 @@ export const command = `install`
 
 export const description = `Installs git hooks using simple-git-hooks!`
 
-export async function handler({ _: [, ...simpleGitHooksArgs] }) {
+export const handler = async ({ _: [, ...simpleGitHooksArgs] }) => {
   const simpleGitHooksArgsSet = new Set(simpleGitHooksArgs)
 
   await inherit(
@@ -16,13 +16,7 @@ export async function handler({ _: [, ...simpleGitHooksArgs] }) {
   )
 }
 
-async function getConfigArgs(simpleGitHooksArgsSet) {
-  if (
-    simpleGitHooksArgsSet.size > 0 ||
-    (await hasLocalConfig(`simple-git-hooks`))
-  ) {
-    return []
-  }
-
-  return [getConfigPath(`simple-git-hooks.json`)]
-}
+const getConfigArgs = async simpleGitHooksArgsSet =>
+  simpleGitHooksArgsSet.size > 0 || (await hasLocalConfig(`simple-git-hooks`))
+    ? []
+    : [getConfigPath(`simple-git-hooks.json`)]

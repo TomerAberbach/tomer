@@ -5,7 +5,7 @@ export const command = `pre-commit`
 
 export const description = `Validates code using lint-staged!`
 
-export async function handler({ _: [, ...lintStagedArgs] }) {
+export const handler = async ({ _: [, ...lintStagedArgs] }) => {
   const lintStagedArgsSet = new Set(lintStagedArgs)
 
   await inherit(
@@ -17,22 +17,14 @@ export async function handler({ _: [, ...lintStagedArgs] }) {
   )
 }
 
-async function getConfigArgs(lintStagedArgsSet) {
-  if (
-    lintStagedArgsSet.has(`--config`) ||
-    lintStagedArgsSet.has(`-c`) ||
-    (await hasLocalConfig(`lint-staged`))
-  ) {
-    return []
-  }
+const getConfigArgs = async lintStagedArgsSet =>
+  lintStagedArgsSet.has(`--config`) ||
+  lintStagedArgsSet.has(`-c`) ||
+  (await hasLocalConfig(`lint-staged`))
+    ? []
+    : [`--config`, getConfigPath(`lint-staged.mjs`)]
 
-  return [`--config`, getConfigPath(`lint-staged.mjs`)]
-}
-
-function getConcurrentArgs(lintStagedArgsSet) {
-  if (lintStagedArgsSet.has(`--concurrent`) || lintStagedArgsSet.has(`-p`)) {
-    return []
-  }
-
-  return [`--concurrent`, `false`]
-}
+const getConcurrentArgs = lintStagedArgsSet =>
+  lintStagedArgsSet.has(`--concurrent`) || lintStagedArgsSet.has(`-p`)
+    ? []
+    : [`--concurrent`, `false`]

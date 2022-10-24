@@ -7,7 +7,7 @@ export const command = `test`
 
 export const description = `Runs tests using Jest!`
 
-export async function handler({ _: [, ...jestArgs] }) {
+export const handler = async ({ _: [, ...jestArgs] }) => {
   process.env.BABEL_ENV = `test`
   process.env.NODE_ENV = `test`
   process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings`
@@ -26,30 +26,20 @@ export async function handler({ _: [, ...jestArgs] }) {
   )
 }
 
-function getWatchArgs(jestArgsSet) {
-  if (
-    isCI ||
-    jestArgsSet.has(`--no-watch`) ||
-    jestArgsSet.has(`--coverage`) ||
-    jestArgsSet.has(`--updateSnapshot`)
-  ) {
-    return []
-  }
+const getWatchArgs = jestArgsSet =>
+  isCI ||
+  jestArgsSet.has(`--no-watch`) ||
+  jestArgsSet.has(`--coverage`) ||
+  jestArgsSet.has(`--updateSnapshot`)
+    ? []
+    : [`--watch`]
 
-  return [`--watch`]
-}
-
-async function getConfigArgs(jestArgsSet) {
-  if (
-    jestArgsSet.has(`--config`) ||
-    jestArgsSet.has(`-c`) ||
-    (await hasLocalConfig(`jest`))
-  ) {
-    return []
-  }
-
-  return [
-    `--config`,
-    JSON.stringify((await import(`../configs/jest.mjs`)).default),
-  ]
-}
+const getConfigArgs = async jestArgsSet =>
+  jestArgsSet.has(`--config`) ||
+  jestArgsSet.has(`-c`) ||
+  (await hasLocalConfig(`jest`))
+    ? []
+    : [
+        `--config`,
+        JSON.stringify((await import(`../configs/jest.mjs`)).default),
+      ]

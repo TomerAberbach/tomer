@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'url'
 import { resolve as importMetaResolve } from 'import-meta-resolve'
 
-export default async function resolveImport(specifier, parent) {
-  return fileURLToPath(await importMetaResolve(specifier, parent))
-}
+const resolveImport = async (specifier, parent) =>
+  fileURLToPath(await importMetaResolve(specifier, parent))
+
+export default resolveImport

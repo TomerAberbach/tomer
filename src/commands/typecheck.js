@@ -6,7 +6,7 @@ export const command = `typecheck`
 
 export const description = `Typechecks code using TypeScript!`
 
-export async function handler({ _: [, ...tscArgs] }) {
+export const handler = async ({ _: [, ...tscArgs] }) => {
   const tscArgsSet = new Set(tscArgs)
 
   const hasProjectOrBuild =

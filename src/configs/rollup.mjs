@@ -2,14 +2,14 @@ import { basename, join, normalize } from 'path'
 import fs from 'fs/promises'
 import etz from 'etz'
 import {
-  collect,
   concat,
   filter,
   flatMap,
-  grouping,
   map,
   pipe,
+  reduce,
   toArray,
+  toGrouped,
   toMap,
   toSet,
 } from 'lfi'
@@ -33,7 +33,7 @@ import {
 import { getProjectDirectory } from '../helpers/local.js'
 import { $ } from '../helpers/command.js'
 
-async function getRollupConfig() {
+const getRollupConfig = async () => {
   const [projectDirectory, packageJson, browserslistConfig, tomerConfig] =
     await Promise.all([
       getProjectDirectory(),
@@ -58,13 +58,13 @@ async function getRollupConfig() {
   return [{ input, output, plugins }, getDtsConfig(parameters)].filter(Boolean)
 }
 
-function getSupportedPlatforms({ packageJson, browserslistConfig }) {
+const getSupportedPlatforms = ({ packageJson, browserslistConfig }) => {
   const isBrowser = Boolean(browserslistConfig)
   const isNode = !isBrowser || Boolean(packageJson.engines?.node)
   return { isBrowser, isNode }
 }
 
-function getInput({ tomerConfig: { jsInput, tsInput } }) {
+const getInput = ({ tomerConfig: { jsInput, tsInput } }) => {
   const input = jsInput ?? tsInput
 
   if (!input) {
@@ -75,8 +75,8 @@ function getInput({ tomerConfig: { jsInput, tsInput } }) {
   return input
 }
 
-function getOutputs({ packageJson }) {
-  return pipe(
+const getOutputs = ({ packageJson }) =>
+  pipe(
     concat(
       [
         [packageJson.main, `cjs`],
@@ -95,7 +95,7 @@ function getOutputs({ packageJson }) {
     ),
     filter(([file]) => Boolean(file)),
     map(([file, format]) => [normalize(file), format]),
-    collect(grouping(toSet, toMap)),
+    reduce(toGrouped(toSet(), toMap())),
     map(([file, formats]) => ({
       file,
       format: formats.has(`esm`) ? `esm` : `cjs`,
@@ -105,30 +105,27 @@ function getOutputs({ packageJson }) {
         /\.min\.[^.]+$/u.test(file) && terser(packageJson.terser ?? {}),
       ],
     })),
-    collect(toArray),
+    reduce(toArray()),
   )
-}
 
-function getKeysDeep(value) {
-  return {
-    *[Symbol.iterator]() {
-      const stack = [value]
+const getKeysDeep = value => ({
+  *[Symbol.iterator]() {
+    const stack = [value]
 
-      do {
-        const value = stack.pop()
+    do {
+      const value = stack.pop()
 
-        if (!value || typeof value !== `object`) {
-          continue
-        }
+      if (!value || typeof value !== `object`) {
+        continue
+      }
 
-        yield* Object.keys(value)
-        stack.push(...Object.values(value))
-      } while (stack.length > 0)
-    },
-  }
-}
+      yield* Object.keys(value)
+      stack.push(...Object.values(value))
+    } while (stack.length > 0)
+  },
+})
 
-function exportsResolveOrNull(...args) {
+const exportsResolveOrNull = (...args) => {
   try {
     return exportsResolve(...args)
   } catch {
@@ -136,66 +133,61 @@ function exportsResolveOrNull(...args) {
   }
 }
 
-async function getPlugins({
+const getPlugins = async ({
   projectDirectory,
   tomerConfig: { tsInput },
   supportedPlatforms: { isNode },
-}) {
-  return [
-    externals({ deps: true }),
-    nodeResolve({
-      preferBuiltins: isNode,
-      mainFields: [`module`, `main`, `jsnext`, `browser`],
-      extensions: [
-        ...map(extension => `.${extension}`, SRC_EXTENSIONS),
-        `.json`,
-      ],
-    }),
-    reportSizes(),
-    commonjs(),
-    json(),
-    babel({
-      ...(!(await hasLocalConfig(`babel`)) &&
-        (await import(`./babel.mjs`)).default),
-      babelHelpers: `bundled`,
-      extensions: SRC_EXTENSIONS,
-    }),
-    tsInput && {
-      name: `output-dts`,
-      async buildStart() {
-        const cachePath = join(projectDirectory, `node_modules/.cache`)
-        try {
-          await fs.mkdir(cachePath, { recursive: true })
-        } catch {}
+}) => [
+  externals({ deps: true }),
+  nodeResolve({
+    preferBuiltins: isNode,
+    mainFields: [`module`, `main`, `jsnext`, `browser`],
+    extensions: [...map(extension => `.${extension}`, SRC_EXTENSIONS), `.json`],
+  }),
+  reportSizes(),
+  commonjs(),
+  json(),
+  babel({
+    ...(!(await hasLocalConfig(`babel`)) &&
+      (await import(`./babel.mjs`)).default),
+    babelHelpers: `bundled`,
+    extensions: SRC_EXTENSIONS,
+  }),
+  tsInput && {
+    name: `output-dts`,
+    buildStart: async () => {
+      const cachePath = join(projectDirectory, `node_modules/.cache`)
+      try {
+        await fs.mkdir(cachePath, { recursive: true })
+      } catch {}
 
-        const tsConfigBuildPath = join(cachePath, `tsconfig.build.json`)
-        await fs.writeFile(
-          tsConfigBuildPath,
-          JSON.stringify({
-            extends: join(projectDirectory, `tsconfig.json`),
-            include: [projectDirectory],
-            exclude: [
-              join(projectDirectory, `test`),
-              join(projectDirectory, `dist`),
-            ],
-          }),
-        )
-        await $`tsc --noEmit false --declaration --emitDeclarationOnly --outDir dist/dts -p ${tsConfigBuildPath}`
-      },
+      const tsConfigBuildPath = join(cachePath, `tsconfig.build.json`)
+      await fs.writeFile(
+        tsConfigBuildPath,
+        JSON.stringify({
+          extends: join(projectDirectory, `tsconfig.json`),
+          include: [projectDirectory],
+          exclude: [
+            join(projectDirectory, `test`),
+            join(projectDirectory, `dist`),
+          ],
+        }),
+      )
+      await $`tsc --noEmit false --declaration --emitDeclarationOnly --outDir dist/dts -p ${tsConfigBuildPath}`
     },
-  ]
-}
+  },
+]
 
-function reportSizes() {
+const reportSizes = () => {
   let initialCode = ``
 
   return {
     name: `report-sizes`,
-    transform(code) {
+    transform: code => {
       initialCode += code
       return code
     },
-    generateBundle({ file }, bundle) {
+    generateBundle: ({ file }, bundle) => {
       console.log(
         `${file}: ${maxmin(
           initialCode,
@@ -207,24 +199,21 @@ function reportSizes() {
   }
 }
 
-function getDtsConfig({ packageJson, tomerConfig: { tsInput, dtsInput } }) {
-  return (
-    (dtsInput || tsInput) && {
-      input: dtsInput || join(`dist/dts`, `${basename(tsInput, `.ts`)}.d.ts`),
-      output: {
-        file: packageJson.types,
-        format: `esm`,
-      },
-      plugins: [
-        dts(),
-        tsInput &&
-          del({
-            targets: `dist/dts`,
-            hook: `buildEnd`,
-          }),
-      ],
-    }
-  )
-}
+const getDtsConfig = ({ packageJson, tomerConfig: { tsInput, dtsInput } }) =>
+  (dtsInput || tsInput) && {
+    input: dtsInput || join(`dist/dts`, `${basename(tsInput, `.ts`)}.d.ts`),
+    output: {
+      file: packageJson.types,
+      format: `esm`,
+    },
+    plugins: [
+      dts(),
+      tsInput &&
+        del({
+          targets: `dist/dts`,
+          hook: `buildEnd`,
+        }),
+    ],
+  }
 
 export default await getRollupConfig()
