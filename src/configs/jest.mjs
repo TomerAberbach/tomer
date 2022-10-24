@@ -25,7 +25,7 @@ const getJestConfig = async () => {
     browserslistConfig,
     isTypeModule,
   ] = await Promise.all([
-    getJestPluginsImports(),
+    getJestPluginImports(),
     getTomerConfig().then(tomerConfig =>
       Promise.all([tomerConfig, getJestSetupFilesAfterEnv(tomerConfig)]),
     ),
@@ -71,7 +71,7 @@ const getJestConfig = async () => {
   }
 }
 
-const getJestPluginsImports = () =>
+const getJestPluginImports = () =>
   Promise.all(
     map(
       specifier => resolveImport(specifier, import.meta.url),
