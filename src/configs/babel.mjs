@@ -42,12 +42,10 @@ const getBabelConfig = async () => {
   }
 }
 
-const getBabelPresetEnvPath = () =>
-  resolveImportHere(`@babel/preset-env`, import.meta.url)
+const getBabelPresetEnvPath = () => resolveImportHere(`@babel/preset-env`)
 
 const getBabelPresetTypeScriptPath = async () =>
-  (await getHasTypes()) &&
-  resolveImportHere(`@babel/preset-typescript`, import.meta.url)
+  (await getHasTypes()) && resolveImportHere(`@babel/preset-typescript`)
 
 const getBabelPresetReactPath = async () =>
   (await hasAnyDependency(`react`)) && resolveImportHere(`@babel/preset-react`)

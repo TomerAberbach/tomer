@@ -23,7 +23,6 @@ specifiers:
   cross-env: ^7.0.3
   eslint: ^8.26.0
   eslint-formatter-pretty: ^4.1.0
-  eslint-plugin-jest: ^27.0.4
   etz: ^1.0.0
   expect-type: ^0.14.2
   fast-check: ^3.3.0
@@ -81,7 +80,6 @@ dependencies:
   cross-env: 7.0.3
   eslint: 8.26.0
   eslint-formatter-pretty: 4.1.0
-  eslint-plugin-jest: 27.0.4_adyx3np4bbytbjsbjj3uf5v5ae
   etz: 1.0.0
   expect-type: 0.14.2
   fast-check: 3.3.0
@@ -4167,6 +4165,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.38.0
       '@typescript-eslint/visitor-keys': 5.38.0
+    dev: true
 
   /@typescript-eslint/scope-manager/5.40.1:
     resolution:
@@ -4252,6 +4251,7 @@ packages:
         integrity: sha512-HHu4yMjJ7i3Cb+8NUuRCdOGu2VMkfmKyIJsOr9PfkBVYLYrtMCK/Ap50Rpov+iKpxDTfnqvDbuPLgBE5FwUNfA==,
       }
     engines: { node: ^12.22.0 || ^14.17.0 || >=16.0.0 }
+    dev: true
 
   /@typescript-eslint/types/5.40.1:
     resolution:
@@ -4316,6 +4316,7 @@ packages:
       typescript: 4.8.4
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@typescript-eslint/typescript-estree/5.40.1_typescript@4.8.4:
     resolution:
@@ -4385,6 +4386,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - typescript
+    dev: true
 
   /@typescript-eslint/utils/5.40.1_wyqvi574yv7oiwfeinomdzmc3m:
     resolution:
@@ -4453,6 +4455,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.38.0
       eslint-visitor-keys: 3.3.0
+    dev: true
 
   /@typescript-eslint/visitor-keys/5.40.1:
     resolution:
@@ -6161,6 +6164,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - typescript
+    dev: true
 
   /eslint-plugin-jest/27.1.3_2gz5tehuzuum4jrvko72jlamcy:
     resolution:

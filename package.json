@@ -67,7 +67,6 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.26.0",
     "eslint-formatter-pretty": "^4.1.0",
-    "eslint-plugin-jest": "^27.0.4",
     "etz": "^1.0.0",
     "expect-type": "^0.14.2",
     "fast-check": "^3.3.0",
