@@ -9,7 +9,7 @@ import {
 } from '../helpers/package-json.js'
 import resolveImport from '../helpers/resolve-import.js'
 
-async function getBabelConfig() {
+const getBabelConfig = async () => {
   const [
     babelPresetEnv,
     babelPresetTypeScript,
@@ -47,15 +47,13 @@ async function getBabelConfig() {
   }
 }
 
-async function getBabelPresetTypeScript() {
-  return (await getHasTypes()) && `@babel/preset-typescript`
-}
+const getBabelPresetTypeScript = async () =>
+  (await getHasTypes()) && `@babel/preset-typescript`
 
-async function getBabelPresetReact() {
-  return (await hasAnyDependency(`react`)) && `@babel/preset-react`
-}
+const getBabelPresetReact = async () =>
+  (await hasAnyDependency(`react`)) && `@babel/preset-react`
 
-async function getResolvedBrowserslistConfig() {
+const getResolvedBrowserslistConfig = async () => {
   const { BABEL_ENV, NODE_ENV } = process.env
   if ((BABEL_ENV || NODE_ENV) === `test`) {
     return `current node`

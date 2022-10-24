@@ -5,7 +5,7 @@ export const command = `commit-msg`
 
 export const description = `Validates commit messages using commitlint!`
 
-export async function handler({ _: [, ...commitlintArgs] }) {
+export const handler = async ({ _: [, ...commitlintArgs] }) => {
   const commitlintArgsSet = new Set(commitlintArgs)
 
   await inherit(
@@ -16,14 +16,9 @@ export async function handler({ _: [, ...commitlintArgs] }) {
   )
 }
 
-async function getConfigArgs(commitlintArgsSet) {
-  if (
-    commitlintArgsSet.has(`--config`) ||
-    commitlintArgsSet.has(`-c`) ||
-    (await hasLocalConfig(`commitlint`))
-  ) {
-    return []
-  }
-
-  return [`--config`, getConfigPath(`commitlint.json`)]
-}
+const getConfigArgs = async commitlintArgsSet =>
+  commitlintArgsSet.has(`--config`) ||
+  commitlintArgsSet.has(`-c`) ||
+  (await hasLocalConfig(`commitlint`))
+    ? []
+    : [`--config`, getConfigPath(`commitlint.json`)]

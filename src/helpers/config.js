@@ -7,13 +7,12 @@ import { concat, map, pipe, reduce, toObject } from 'lfi'
 import { getPackageJsonPath } from './package-json.js'
 import { getProjectDirectory, hasLocalFile } from './local.js'
 
-export function getConfigPath(configName) {
-  return join(dirname(__dirname), `configs`, configName)
-}
+export const getConfigPath = configName =>
+  join(dirname(__dirname), `configs`, configName)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-export async function hasLocalConfig(moduleName) {
+export const hasLocalConfig = async moduleName => {
   const noDashModuleName = moduleName.replace(`-`, ``)
 
   return Boolean(
@@ -56,7 +55,7 @@ export const getBrowserslistConfig = pMemoize(async () =>
   }),
 )
 
-export async function getHasTypes() {
+export const getHasTypes = async () => {
   if (await hasLocalFile(`tsconfig.json`)) {
     return true
   }
@@ -65,9 +64,8 @@ export async function getHasTypes() {
   return Boolean(tsInput || dtsInput)
 }
 
-export async function getHasTest() {
-  return hasLocalFile((await getTomerConfig()).test)
-}
+export const getHasTest = async () =>
+  hasLocalFile((await getTomerConfig()).test)
 
 export const getTomerConfig = pMemoize(async () => {
   const { src = `src`, test = `test` } =
@@ -84,6 +82,5 @@ export const getTomerConfig = pMemoize(async () => {
   return { src, test, jsInput, tsInput, dtsInput }
 })
 
-async function getLocalFilePath(filename) {
-  return (await hasLocalFile(filename)) ? filename : null
-}
+const getLocalFilePath = async filename =>
+  (await hasLocalFile(filename)) ? filename : null

@@ -7,7 +7,7 @@ export const command = `format`
 
 export const description = `Formats code using Prettier!`
 
-export async function handler({ _: [, ...prettierArgs], '--': globs = [] }) {
+export const handler = async ({ _: [, ...prettierArgs], '--': globs = [] }) => {
   const prettierArgsSet = new Set(prettierArgs)
 
   const [configArgs, ignorePathArgs] = await Promise.all([
@@ -27,58 +27,39 @@ export async function handler({ _: [, ...prettierArgs], '--': globs = [] }) {
   )
 }
 
-async function getConfigArgs(prettierArgsSet) {
-  if (
-    prettierArgsSet.has(`--config`) ||
-    prettierArgsSet.has(`--no-config`) ||
-    (await hasLocalConfig(`prettier`))
-  ) {
-    return []
-  }
+const getConfigArgs = async prettierArgsSet =>
+  prettierArgsSet.has(`--config`) ||
+  prettierArgsSet.has(`--no-config`) ||
+  (await hasLocalConfig(`prettier`))
+    ? []
+    : [
+        `--config`,
+        await resolveImport(`@tomer/prettier-config`, import.meta.url),
+      ]
 
-  const configPath = await resolveImport(
-    `@tomer/prettier-config`,
-    import.meta.url,
-  )
-  return [`--config`, configPath]
-}
+const getIgnorePathArgs = async prettierArgsSet =>
+  prettierArgsSet.has(`--ignore-path`) ||
+  (await hasLocalFile(`.prettierignore`))
+    ? []
+    : [
+        `--ignore-path`,
+        (await hasLocalFile(`.gitignore`))
+          ? await fromProjectDirectory(`.gitignore`)
+          : getConfigPath(`ignore`),
+      ]
 
-async function getIgnorePathArgs(prettierArgsSet) {
-  if (
-    prettierArgsSet.has(`--ignore-path`) ||
-    (await hasLocalFile(`.prettierignore`))
-  ) {
-    return []
-  }
+const getWriteArgs = prettierArgsSet =>
+  prettierArgsSet.has(`--no-write`) ||
+  prettierArgsSet.has(`-w`) ||
+  prettierArgsSet.has(`--write`) ||
+  prettierArgsSet.has(`--check`) ||
+  prettierArgsSet.has(`-c`) ||
+  prettierArgsSet.has(`--list-different`) ||
+  prettierArgsSet.has(`-l`)
+    ? []
+    : [`--write`]
 
-  return [
-    `--ignore-path`,
-    (await hasLocalFile(`.gitignore`))
-      ? await fromProjectDirectory(`.gitignore`)
-      : getConfigPath(`ignore`),
-  ]
-}
-
-function getWriteArgs(prettierArgsSet) {
-  if (
-    prettierArgsSet.has(`--no-write`) ||
-    prettierArgsSet.has(`-w`) ||
-    prettierArgsSet.has(`--write`) ||
-    prettierArgsSet.has(`--check`) ||
-    prettierArgsSet.has(`-c`) ||
-    prettierArgsSet.has(`--list-different`) ||
-    prettierArgsSet.has(`-l`)
-  ) {
-    return []
-  }
-
-  return [`--write`]
-}
-
-function getIgnoreUnknownArgs(prettierArgsSet) {
-  if (prettierArgsSet.has(`--ignore-unknown`) || prettierArgsSet.has(`-u`)) {
-    return []
-  }
-
-  return [`--ignore-unknown`]
-}
+const getIgnoreUnknownArgs = prettierArgsSet =>
+  prettierArgsSet.has(`--ignore-unknown`) || prettierArgsSet.has(`-u`)
+    ? []
+    : [`--ignore-unknown`]

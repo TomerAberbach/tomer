@@ -13,7 +13,7 @@ import { getIsTypeModule } from '../helpers/package-json.js'
 
 const require = createRequire(import.meta.url)
 
-async function getJestConfig() {
+const getJestConfig = async () => {
   const [
     [
       jestWatchTypeaheadFilename,
@@ -71,8 +71,8 @@ async function getJestConfig() {
   }
 }
 
-function getJestPluginsImports() {
-  return Promise.all(
+const getJestPluginsImports = () =>
+  Promise.all(
     map(
       specifier => resolveImport(specifier, import.meta.url),
       [
@@ -82,9 +82,8 @@ function getJestPluginsImports() {
       ],
     ),
   )
-}
 
-async function getJestSetupFilesAfterEnv({ test }) {
+const getJestSetupFilesAfterEnv = async ({ test }) => {
   const setupFilesAfterEnv = await pipe(
     SRC_EXTENSIONS,
     map(extension => join(test, `setup-env.${extension}`)),
@@ -97,7 +96,7 @@ async function getJestSetupFilesAfterEnv({ test }) {
   return [require.resolve(`jest-extended/all`), ...setupFilesAfterEnv]
 }
 
-async function getJestTransform() {
+const getJestTransform = async () => {
   if (await hasLocalConfig(`babel`)) {
     return {}
   }

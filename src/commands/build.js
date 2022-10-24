@@ -5,8 +5,5 @@ export const command = `build`
 
 export const description = `Builds code using Rollup!`
 
-export async function handler({ _: [, ...rollupArgs] }) {
-  await inherit(
-    $`rollup --config ${getConfigPath(`rollup.mjs`)} ${[...rollupArgs]}`,
-  )
-}
+export const handler = ({ _: [, ...rollupArgs] }) =>
+  inherit($`rollup --config ${getConfigPath(`rollup.mjs`)} ${[...rollupArgs]}`)
