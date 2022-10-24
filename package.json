@@ -60,7 +60,7 @@
     "@tomer/eslint-config": "^1.0.0",
     "@tomer/prettier-config": "^0.3.0",
     "@tsconfig/recommended": "^1.0.1",
-    "@types/node": "^18.7.19",
+    "@types/node": "^18.11.4",
     "babel-jest": "^29.2.2",
     "browserslist": "^4.21.4",
     "cosmiconfig": "^7.0.1",
@@ -96,7 +96,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "semver": "^7.3.7",
     "simple-git-hooks": "^2.8.0",
-    "typescript": "^4.8.3",
+    "typescript": "^4.8.4",
     "widest-line": "^4.0.1",
     "yargs": "^17.5.1",
     "zx": "^7.0.8"
