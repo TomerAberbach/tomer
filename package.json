@@ -61,7 +61,7 @@
     "@tomer/prettier-config": "^0.3.0",
     "@tsconfig/recommended": "^1.0.1",
     "@types/node": "^18.7.19",
-    "babel-jest": "^29.0.3",
+    "babel-jest": "^29.2.2",
     "browserslist": "^4.21.4",
     "cosmiconfig": "^7.0.1",
     "cross-env": "^7.0.3",
