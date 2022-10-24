@@ -2,14 +2,14 @@ import { basename, join, normalize } from 'path'
 import fs from 'fs/promises'
 import etz from 'etz'
 import {
-  collect,
   concat,
   filter,
   flatMap,
-  grouping,
   map,
   pipe,
+  reduce,
   toArray,
+  toGrouped,
   toMap,
   toSet,
 } from 'lfi'
@@ -95,7 +95,7 @@ function getOutputs({ packageJson }) {
     ),
     filter(([file]) => Boolean(file)),
     map(([file, format]) => [normalize(file), format]),
-    collect(grouping(toSet, toMap)),
+    reduce(toGrouped(toSet(), toMap())),
     map(([file, formats]) => ({
       file,
       format: formats.has(`esm`) ? `esm` : `cjs`,
@@ -105,7 +105,7 @@ function getOutputs({ packageJson }) {
         /\.min\.[^.]+$/u.test(file) && terser(packageJson.terser ?? {}),
       ],
     })),
-    collect(toArray),
+    reduce(toArray()),
   )
 }
 
