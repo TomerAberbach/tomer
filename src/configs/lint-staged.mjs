@@ -17,18 +17,18 @@ const [scripts, useAddlicense] = await Promise.all([
 
 const script = (names, flags) => {
   const name = [names].flat().find(name => scripts[name])
-  return name && `npm run ${name} --${flags ? ` ${flags}` : ``} --`
+  return name && `npm run ${name} -- ${flags}`
 }
 
 const config = {
-  [`*.{${SRC_EXTENSIONS.join(`,`)},md}`]: [script(`lint`)],
+  [`*.{${SRC_EXTENSIONS.join(`,`)},md}`]: [script(`lint`, `--`)],
   '*': [
-    script(`format`),
+    script(`format`, `--`),
     useAddlicense && `addlicense`,
-    script(`typecheck`),
+    script(`typecheck`, `--`),
     script(
       [`test:unit`, `test`],
-      `--findRelatedTests --watchAll=false --passWithNoTests`,
+      `--watchAll=false --passWithNoTests --findRelatedTests`,
     ),
   ],
 }
