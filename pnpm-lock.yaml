@@ -27,7 +27,6 @@ specifiers:
   eslint-formatter-pretty: ^4.1.0
   etz: ^1.0.0
   expect-type: ^0.14.2
-  fast-check: ^3.3.0
   globby: ^13.1.2
   import-meta-resolve: ^2.1.0
   is-ci: ^3.0.1
@@ -86,7 +85,6 @@ dependencies:
   eslint-formatter-pretty: 4.1.0
   etz: 1.0.0
   expect-type: 0.14.2
-  fast-check: 3.3.0
   globby: 13.1.2
   import-meta-resolve: 2.1.0
   is-ci: 3.0.1
