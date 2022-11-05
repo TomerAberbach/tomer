@@ -1,5 +1,4 @@
 import etz from 'etz'
-import { map } from 'lfi'
 import minVersion from 'semver/ranges/min-version.js'
 import { getBrowserslistConfig, getHasTypes } from '../helpers/config.js'
 import {
@@ -17,13 +16,9 @@ const getBabelConfig = async () => {
     browserslistConfig,
     isTypeModule,
   ] = await Promise.all([
-    ...map(
-      specifier =>
-        Promise.resolve(specifier).then(
-          specifier => specifier && resolveImport(specifier, import.meta.url),
-        ),
-      [`@babel/preset-env`, getBabelPresetTypeScript(), getBabelPresetReact()],
-    ),
+    getBabelPresetEnvPath(),
+    getBabelPresetTypeScriptPath(),
+    getBabelPresetReactPath(),
     getResolvedBrowserslistConfig(),
     getIsTypeModule(),
   ])
@@ -47,11 +42,15 @@ const getBabelConfig = async () => {
   }
 }
 
-const getBabelPresetTypeScript = async () =>
-  (await getHasTypes()) && `@babel/preset-typescript`
+const getBabelPresetEnvPath = () => resolveImportHere(`@babel/preset-env`)
 
-const getBabelPresetReact = async () =>
-  (await hasAnyDependency(`react`)) && `@babel/preset-react`
+const getBabelPresetTypeScriptPath = async () =>
+  (await getHasTypes()) && resolveImportHere(`@babel/preset-typescript`)
+
+const getBabelPresetReactPath = async () =>
+  (await hasAnyDependency(`react`)) && resolveImportHere(`@babel/preset-react`)
+
+const resolveImportHere = specifier => resolveImport(specifier, import.meta.url)
 
 const getResolvedBrowserslistConfig = async () => {
   const { BABEL_ENV, NODE_ENV } = process.env

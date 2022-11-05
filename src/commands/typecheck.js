@@ -1,6 +1,6 @@
 import etz from 'etz'
 import { $, inherit } from '../helpers/command.js'
-import { hasLocalFile } from '../helpers/local.js'
+import { globLocalFiles } from '../helpers/local.js'
 
 export const command = `typecheck`
 
@@ -15,12 +15,21 @@ export const handler = async ({ _: [, ...tscArgs] }) => {
     tscArgsSet.has(`--build`) ||
     tscArgsSet.has(`-b`)
 
-  if (!hasProjectOrBuild && !(await hasLocalFile(`tsconfig.json`))) {
+  if (hasProjectOrBuild) {
+    await inherit($`tsc ${tscArgs}`)
+    return
+  }
+
+  const tsConfigPaths = await globLocalFiles(`**/tsconfig.json`)
+
+  if (tsConfigPaths.length === 0) {
     etz.error(
       `Cannot typecheck without --project, -p, --build, -b, or a tsconfig.json`,
     )
     process.exit(1)
   }
 
-  await inherit($`tsc ${hasProjectOrBuild ? [] : [`--build`]} ${tscArgs}`)
+  await inherit(
+    tsConfigPaths.map(tsConfigPath => $`tsc -p ${tsConfigPath} ${tscArgs}`),
+  )
 }

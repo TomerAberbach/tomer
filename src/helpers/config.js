@@ -4,7 +4,7 @@ import { cosmiconfig, defaultLoaders } from 'cosmiconfig'
 import browserslist from 'browserslist'
 import pMemoize from 'p-memoize'
 import { concat, map, pipe, reduce, toObject } from 'lfi'
-import { getPackageJsonPath } from './package-json.js'
+import { getPackageJsonPath, getPackageJsonScripts } from './package-json.js'
 import { getProjectDirectory, hasLocalFile } from './local.js'
 
 export const getConfigPath = configName =>
@@ -55,17 +55,8 @@ export const getBrowserslistConfig = pMemoize(async () =>
   }),
 )
 
-export const getHasTypes = async () => {
-  if (await hasLocalFile(`tsconfig.json`)) {
-    return true
-  }
-
-  const { tsInput, dtsInput } = await getTomerConfig()
-  return Boolean(tsInput || dtsInput)
-}
-
-export const getHasTest = async () =>
-  hasLocalFile((await getTomerConfig()).test)
+export const getHasTypes = async () =>
+  Boolean((await getPackageJsonScripts()).typecheck)
 
 export const getTomerConfig = pMemoize(async () => {
   const { src = `src`, test = `test` } =

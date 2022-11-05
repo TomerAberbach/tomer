@@ -3,6 +3,7 @@ import { constants, promises as fs } from 'fs'
 import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import etz from 'etz'
 import pMemoize from 'p-memoize'
+import { globby } from 'globby'
 import { $ } from './command.js'
 
 export const hasLocalFile = async path => {
@@ -16,6 +17,9 @@ export const hasLocalFile = async path => {
 
   return true
 }
+
+export const globLocalFiles = async patterns =>
+  globby(patterns, { cwd: await getProjectDirectory(), gitignore: true })
 
 export const fromProjectDirectory = async (...paths) =>
   join(await getProjectDirectory(), ...paths)
