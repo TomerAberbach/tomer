@@ -1,12 +1,41 @@
 {
   "compilerOptions": {
+    // Type checking
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "strict": true,
+
+    // Modules
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "allowSyntheticDefaultImports": true,
-    "lib": ["ESNext"],
-    "strict": true,
-    "noEmit": true,
+    "resolveJsonModule": true,
+
+    // Emit
     "downlevelIteration": true,
-    "stripInternal": true
+    "importsNotUsedAsValues": "error",
+    "noEmit": true,
+    "stripInternal": true,
+
+    // JavaScript support
+    "allowJs": true,
+
+    // Interop
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+
+    // Environment
+    "jsx": "react-jsx",
+    "lib": ["ESNext"],
+    "target": "ESNext",
+
+    // Projects
+    "incremental": true,
+    "skipLibCheck": true
   }
 }

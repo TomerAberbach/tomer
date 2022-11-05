@@ -1,6 +1,6 @@
 import { fromProjectDirectory } from '../helpers/local.js'
 import { $, inherit } from '../helpers/command.js'
-import { hasLocalConfig } from '../helpers/config.js'
+import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 export const command = `lint`
@@ -35,7 +35,7 @@ const getConfigArgs = async eslintArgsSet =>
   eslintArgsSet.has(`-c`) ||
   (!eslintArgsSet.has(`--no-config-lookup`) && (await hasLocalConfig(`eslint`)))
     ? []
-    : [`--config`, await resolveImport(`@tomer/eslint-config`, import.meta.url)]
+    : [`--config`, getConfigPath(`eslint.mjs`)]
 
 const getCacheArgs = async eslintArgsSet =>
   eslintArgsSet.has(`--no-cache`)

@@ -1,24 +1,40 @@
-import { getHasTest, getHasTypes } from '../helpers/config.js'
+import { entries, filter, pipe, reduce, toObject } from 'lfi'
 import { $ } from '../helpers/command.js'
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
-import { getPackageJson } from '../helpers/package-json.js'
+import {
+  getPackageJson,
+  getPackageJsonScripts,
+} from '../helpers/package-json.js'
 
 const getUseAddlicense = async () =>
   (await getPackageJson()).license === `Apache-2.0` &&
   (await $`which addlicense`.exitCode) === 0
 
-const [hasTypes, hasTest, useAddlicense] = await Promise.all([
-  getHasTypes(),
-  getHasTest(),
+const [scripts, useAddlicense] = await Promise.all([
+  getPackageJsonScripts(),
   getUseAddlicense(),
 ])
 
-export default {
-  [`*.{${SRC_EXTENSIONS.join(`,`)},md}`]: [`tomer lint --`],
-  '*': [
-    `tomer format --`,
-    useAddlicense && `addlicense`,
-    hasTypes && `tomer typecheck --`,
-    hasTest && `tomer test --findRelatedTests --no-watch --passWithNoTests`,
-  ].filter(Boolean),
+const script = (names, flags) => {
+  const name = [names].flat().find(name => scripts[name])
+  return name && `npm run ${name} --${flags ? ` ${flags}` : ``} --`
 }
+
+const config = {
+  [`*.{${SRC_EXTENSIONS.join(`,`)},md}`]: [script(`lint`)],
+  '*': [
+    script(`format`),
+    useAddlicense && `addlicense`,
+    script(`typecheck`),
+    script(
+      [`test:unit`, `test`],
+      `--findRelatedTests --no-watch --passWithNoTests`,
+    ),
+  ],
+}
+
+export default pipe(
+  entries(config),
+  filter(([, value]) => value.length > 0),
+  reduce(toObject()),
+)
