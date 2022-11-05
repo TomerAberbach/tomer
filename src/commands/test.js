@@ -28,7 +28,7 @@ export const handler = async ({ _: [, ...jestArgs] }) => {
 
 const getWatchArgs = jestArgsSet =>
   isCI ||
-  jestArgsSet.has(`--no-watch`) ||
+  jestArgsSet.has(`--watchAll=false`) ||
   jestArgsSet.has(`--coverage`) ||
   jestArgsSet.has(`--updateSnapshot`)
     ? []
