@@ -28,7 +28,7 @@ const config = {
     script(`typecheck`),
     script(
       [`test:unit`, `test`],
-      `--findRelatedTests --no-watch --passWithNoTests`,
+      `--findRelatedTests --watchAll=false --passWithNoTests`,
     ),
   ],
 }
