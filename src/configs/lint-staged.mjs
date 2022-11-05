@@ -1,4 +1,4 @@
-import { entries, filter, pipe, reduce, toObject } from 'lfi'
+import { entries, filter, map, pipe, reduce, toObject } from 'lfi'
 import { $ } from '../helpers/command.js'
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import {
@@ -35,6 +35,7 @@ const config = {
 
 export default pipe(
   entries(config),
+  map(([key, value]) => [key, value.filter(Boolean)]),
   filter(([, value]) => value.length > 0),
   reduce(toObject()),
 )
