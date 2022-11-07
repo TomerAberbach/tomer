@@ -59,7 +59,7 @@
     "@rollup/plugin-json": "^5.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.1.0",
-    "@tomer/eslint-config": "^1.1.2",
+    "@tomer/eslint-config": "^1.2.0",
     "@tomer/prettier-config": "^0.3.0",
     "@tsconfig/recommended": "^1.0.1",
     "@types/node": "^18.11.4",
