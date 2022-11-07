@@ -7,7 +7,7 @@ specifiers:
   '@babel/preset-typescript': ^7.18.6
   '@commitlint/cli': ^17.1.2
   '@commitlint/config-conventional': ^17.1.0
-  '@fast-check/jest': ^1.3.1
+  '@fast-check/jest': 1.3.2
   '@humanwhocodes/gitignore-to-minimatch': ^1.0.2
   '@jest/globals': ^29.2.2
   '@rollup/plugin-babel': ^6.0.2
@@ -65,7 +65,7 @@ dependencies:
   '@babel/preset-typescript': 7.18.6_@babel+core@7.19.6
   '@commitlint/cli': 17.1.2
   '@commitlint/config-conventional': 17.1.0
-  '@fast-check/jest': 1.3.1_@jest+globals@29.2.2
+  '@fast-check/jest': 1.3.2_@jest+globals@29.2.2
   '@humanwhocodes/gitignore-to-minimatch': 1.0.2
   '@jest/globals': 29.2.2
   '@rollup/plugin-babel': 6.0.2_vwutr7bhcrrxu2vgeofxxjznjq
@@ -1940,6 +1940,19 @@ packages:
     dependencies:
       '@jest/globals': 29.2.2
       fast-check: 3.3.0
+    dev: true
+
+  /@fast-check/jest/1.3.2_@jest+globals@29.2.2:
+    resolution:
+      {
+        integrity: sha512-5SqGDGVuQbNqKqC2WvZEbfFsmolsMvu8YGqR+3yc7KothLFrkWIM/MeJJksDeFBg7lEn2U9XMzrA1bsItZKc0A==,
+      }
+    peerDependencies:
+      '@jest/globals': '>=25.5.2'
+    dependencies:
+      '@jest/globals': 29.2.2
+      fast-check: 3.3.0
+    dev: false
 
   /@humanwhocodes/config-array/0.11.6:
     resolution:
