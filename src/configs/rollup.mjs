@@ -127,7 +127,7 @@ const getKeysDeep = value => ({
 
 const exportsResolveOrNull = (...args) => {
   try {
-    return exportsResolve(...args)
+    return exportsResolve(...args)[0]
   } catch {
     return null
   }
