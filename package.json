@@ -102,6 +102,6 @@
     "zx": "^7.1.1"
   },
   "devDependencies": {
-    "tomer": "^1.0.1"
+    "tomer": "^1.2.0"
   }
 }
