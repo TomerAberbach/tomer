@@ -9,7 +9,6 @@ import {
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import { getProjectDirectory, hasLocalFile } from '../helpers/local.js'
 import resolveImport from '../helpers/resolve-import.js'
-import { getIsTypeModule } from '../helpers/package-json.js'
 
 const require = createRequire(import.meta.url)
 
@@ -23,7 +22,6 @@ const getJestConfig = async () => {
     [{ src, test }, setupFilesAfterEnv],
     transform,
     browserslistConfig,
-    isTypeModule,
   ] = await Promise.all([
     getJestPluginImports(),
     getTomerConfig().then(tomerConfig =>
@@ -31,7 +29,6 @@ const getJestConfig = async () => {
     ),
     getJestTransform(),
     getBrowserslistConfig(),
-    getIsTypeModule(),
   ])
 
   const srcExtensionsPattern = `{${SRC_EXTENSIONS.join(`,`)}}`
@@ -44,7 +41,7 @@ const getJestConfig = async () => {
 
   return {
     roots: [join(`<rootDir>`, src), join(`<rootDir>`, test)],
-    extensionsToTreatAsEsm: [`.mts`, isTypeModule && `.ts`].filter(Boolean),
+    extensionsToTreatAsEsm: [`.mts`, `.ts`],
     moduleNameMapper: {
       '^(\\.{1,2}/.*)\\.js$': `$1`,
     },
