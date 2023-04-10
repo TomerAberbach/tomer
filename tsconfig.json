@@ -16,7 +16,7 @@
 
     // Emit
     "downlevelIteration": true,
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
     "noEmit": true,
     "stripInternal": true,
 

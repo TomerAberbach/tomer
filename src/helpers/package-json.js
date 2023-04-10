@@ -2,9 +2,6 @@ import fs from 'fs/promises'
 import pMemoize from 'p-memoize'
 import { fromProjectDirectory } from './local.js'
 
-export const getIsTypeModule = async () =>
-  (await getPackageJson()).type === `module`
-
 export const getPackageJsonScripts = async () => {
   const { scripts = {} } = await getPackageJson()
   return scripts

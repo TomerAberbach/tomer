@@ -1,11 +1,7 @@
 import etz from 'etz'
 import minVersion from 'semver/ranges/min-version.js'
 import { getBrowserslistConfig, getHasTypes } from '../helpers/config.js'
-import {
-  getIsTypeModule,
-  getPackageJson,
-  hasAnyDependency,
-} from '../helpers/package-json.js'
+import { getPackageJson, hasAnyDependency } from '../helpers/package-json.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 const getBabelConfig = async () => {
@@ -14,13 +10,11 @@ const getBabelConfig = async () => {
     babelPresetTypeScript,
     babelPresetReact,
     browserslistConfig,
-    isTypeModule,
   ] = await Promise.all([
     getBabelPresetEnvPath(),
     getBabelPresetTypeScriptPath(),
     getBabelPresetReactPath(),
     getResolvedBrowserslistConfig(),
-    getIsTypeModule(),
   ])
 
   return {
@@ -31,7 +25,7 @@ const getBabelConfig = async () => {
       [
         babelPresetEnv,
         {
-          modules: isTypeModule ? false : `cjs`,
+          modules: false,
           loose: true,
           targets: browserslistConfig,
         },

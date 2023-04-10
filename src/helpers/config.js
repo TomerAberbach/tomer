@@ -1,11 +1,12 @@
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
-import { cosmiconfig, defaultLoaders } from 'cosmiconfig'
+import { cosmiconfig } from 'cosmiconfig'
 import browserslist from 'browserslist'
 import pMemoize from 'p-memoize'
-import { concat, map, pipe, reduce, toObject } from 'lfi'
+import { concat, flatMap, map, pipe, reduce, toObject } from 'lfi'
 import { getPackageJsonPath, getPackageJsonScripts } from './package-json.js'
 import { getProjectDirectory, hasLocalFile } from './local.js'
+import { SRC_EXTENSIONS } from './matches.js'
 
 export const getConfigPath = configName =>
   join(dirname(__dirname), `configs`, configName)
@@ -24,30 +25,28 @@ export const hasLocalConfig = async moduleName => {
       searchPlaces: [
         `package.json`,
         `.${noDashModuleName}rc`,
-        `.${noDashModuleName}rc.json`,
-        `.${noDashModuleName}rc.yaml`,
-        `.${noDashModuleName}rc.yml`,
-        `.${noDashModuleName}rc.js`,
-        `.${noDashModuleName}rc.ts`,
-        `.${noDashModuleName}rc.cjs`,
-        `.${noDashModuleName}rc.mjs`,
-        `${moduleName}.config.json`,
-        `${moduleName}.config.yaml`,
-        `${moduleName}.config.yml`,
-        `${moduleName}.config.js`,
-        `${moduleName}.config.ts`,
-        `${moduleName}.config.cjs`,
-        `${moduleName}.config.mjs`,
+        ...pipe(
+          CONFIG_EXTENSIONS,
+          flatMap(ext => [
+            `.${noDashModuleName}rc.${ext}`,
+            `${moduleName}.config.${ext}`,
+          ]),
+        ),
       ],
       packageProp: [moduleName, `${moduleName}Config`],
       loaders: pipe(
-        concat(Object.keys(defaultLoaders), [`.ts`, `.mjs`]),
+        concat(
+          map(ext => `.${ext}`, CONFIG_EXTENSIONS),
+          [`noExt`],
+        ),
         map(ext => [ext, () => true]),
         reduce(toObject()),
       ),
     }).search(await getPackageJsonPath()),
   )
 }
+
+const CONFIG_EXTENSIONS = [`json`, `yaml`, `yml`].concat(SRC_EXTENSIONS)
 
 export const getBrowserslistConfig = pMemoize(async () =>
   browserslist.loadConfig({
