@@ -1,4 +1,4 @@
-import { basename, join, normalize } from 'path'
+import { basename, dirname, join, normalize } from 'path'
 import fs from 'fs/promises'
 import etz from 'etz'
 import {
@@ -201,7 +201,9 @@ const reportSizes = () => {
 
 const getDtsConfig = ({ packageJson, tomerConfig: { tsInput, dtsInput } }) =>
   (dtsInput || tsInput) && {
-    input: dtsInput || join(`dist/dts`, `${basename(tsInput, `.ts`)}.d.ts`),
+    input:
+      dtsInput ||
+      join(`dist/dts`, dirname(tsInput), `${basename(tsInput, `.ts`)}.d.ts`),
     output: {
       file: packageJson.types,
       format: `esm`,
