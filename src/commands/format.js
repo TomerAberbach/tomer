@@ -32,10 +32,7 @@ const getConfigArgs = async prettierArgsSet =>
   prettierArgsSet.has(`--no-config`) ||
   (await hasLocalConfig(`prettier`))
     ? []
-    : [
-        `--config`,
-        await resolveImport(`@tomer/prettier-config`, import.meta.url),
-      ]
+    : [`--config`, resolveImport(`@tomer/prettier-config`, import.meta.url)]
 
 const getIgnorePathArgs = async prettierArgsSet =>
   prettierArgsSet.has(`--ignore-path`) ||

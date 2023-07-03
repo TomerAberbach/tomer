@@ -5,17 +5,12 @@ import { getPackageJson, hasAnyDependency } from '../helpers/package-json.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 const getBabelConfig = async () => {
-  const [
-    babelPresetEnv,
-    babelPresetTypeScript,
-    babelPresetReact,
-    browserslistConfig,
-  ] = await Promise.all([
-    getBabelPresetEnvPath(),
-    getBabelPresetTypeScriptPath(),
-    getBabelPresetReactPath(),
-    getResolvedBrowserslistConfig(),
-  ])
+  const [babelPresetTypeScript, babelPresetReact, browserslistConfig] =
+    await Promise.all([
+      getBabelPresetTypeScriptPath(),
+      getBabelPresetReactPath(),
+      getResolvedBrowserslistConfig(),
+    ])
 
   return {
     parserOpts: {
@@ -23,7 +18,7 @@ const getBabelConfig = async () => {
     },
     presets: [
       [
-        babelPresetEnv,
+        getBabelPresetEnvPath(),
         {
           modules: false,
           loose: true,
