@@ -2,7 +2,6 @@
 import widestLine from 'widest-line'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import commands from './commands/index.js'
 import './helpers/env.js'
 
 const logo = String.raw`
@@ -35,6 +34,6 @@ yargs(argv)
   .alias(`h`, `help`)
   .version()
   .alias(`v`, `version`)
-  .command(commands)
+  .command((await import(`./commands/index.js`)).default)
   .demandCommand()
   .parse()
