@@ -1,12 +1,12 @@
+import browserslist from 'browserslist'
+import { cosmiconfig } from 'cosmiconfig'
+import { concat, flatMap, map, pipe, reduce, toObject } from 'lfi'
+import pMemoize from 'p-memoize'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
-import { cosmiconfig } from 'cosmiconfig'
-import browserslist from 'browserslist'
-import pMemoize from 'p-memoize'
-import { concat, flatMap, map, pipe, reduce, toObject } from 'lfi'
-import { getPackageJsonPath, getPackageJsonScripts } from './package-json.js'
 import { getProjectDirectory, hasLocalFile } from './local.js'
 import { SRC_EXTENSIONS } from './matches.js'
+import { getPackageJsonPath, getPackageJsonScripts } from './package-json.js'
 
 export const getConfigPath = configName =>
   join(dirname(__dirname), `configs`, configName)

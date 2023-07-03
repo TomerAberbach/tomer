@@ -1,13 +1,13 @@
-import { join } from 'path'
-import { createRequire } from 'module'
 import { asConcur, findConcur, map, mapConcur, orConcur, pipe } from 'lfi'
+import { createRequire } from 'module'
+import { join } from 'path'
 import {
   getBrowserslistConfig,
   getTomerConfig,
   hasLocalConfig,
 } from '../helpers/config.js'
-import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import { getProjectDirectory, hasLocalFile } from '../helpers/local.js'
+import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 const require = createRequire(import.meta.url)

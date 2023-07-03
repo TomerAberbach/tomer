@@ -1,7 +1,7 @@
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
 import fs from 'fs/promises'
+import { dirname, join } from 'path'
 import resolve from 'resolve'
+import { fileURLToPath } from 'url'
 
 const getBinPath = async packageName => {
   const packageJsonPath = await new Promise(res =>

@@ -1,9 +1,9 @@
-import { join, resolve } from 'path'
-import { constants, promises as fs } from 'fs'
-import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import etz from 'etz'
-import pMemoize from 'p-memoize'
+import { constants, promises as fs } from 'fs'
 import { globby } from 'globby'
+import pMemoize from 'p-memoize'
+import { join, resolve } from 'path'
+import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import { $ } from './command.js'
 
 export const hasLocalFile = async path => {
