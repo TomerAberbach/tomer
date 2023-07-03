@@ -14,22 +14,18 @@ const require = createRequire(import.meta.url)
 
 const getJestConfig = async () => {
   const [
-    [
-      jestWatchTypeaheadFilename,
-      jestWatchTypeaheadTestname,
-      jestSerializerPath,
-    ],
-    [{ src, test }, setupFilesAfterEnv],
-    transform,
-    browserslistConfig,
-  ] = await Promise.all([
-    getJestPluginImports(),
-    getTomerConfig().then(tomerConfig =>
-      Promise.all([tomerConfig, getJestSetupFilesAfterEnv(tomerConfig)]),
-    ),
-    getJestTransform(),
-    getBrowserslistConfig(),
-  ])
+    jestWatchTypeaheadFilename,
+    jestWatchTypeaheadTestname,
+    jestSerializerPath,
+  ] = getJestPluginImports()
+  const [[{ src, test }, setupFilesAfterEnv], transform, browserslistConfig] =
+    await Promise.all([
+      getTomerConfig().then(tomerConfig =>
+        Promise.all([tomerConfig, getJestSetupFilesAfterEnv(tomerConfig)]),
+      ),
+      getJestTransform(),
+      getBrowserslistConfig(),
+    ])
 
   const srcExtensionsPattern = `{${SRC_EXTENSIONS.join(`,`)}}`
   const jestIgnorePatterns = [
@@ -69,16 +65,11 @@ const getJestConfig = async () => {
 }
 
 const getJestPluginImports = () =>
-  Promise.all(
-    map(
-      specifier => resolveImport(specifier, import.meta.url),
-      [
-        `jest-watch-typeahead/filename`,
-        `jest-watch-typeahead/testname`,
-        `jest-serializer-path`,
-      ],
-    ),
-  )
+  [
+    `jest-watch-typeahead/filename`,
+    `jest-watch-typeahead/testname`,
+    `jest-serializer-path`,
+  ].map(specifier => resolveImport(specifier, import.meta.url))
 
 const getJestSetupFilesAfterEnv = async ({ test }) => {
   const setupFilesAfterEnv = await pipe(

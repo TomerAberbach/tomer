@@ -12,17 +12,16 @@ export const handler = async ({ _: [, ...eslintArgs], '--': globs = [] }) => {
 
   const eslintArgsSet = new Set(eslintArgs)
 
-  const [configArgs, cacheArgs, formatArgs] = await Promise.all([
+  const [configArgs, cacheArgs] = await Promise.all([
     getConfigArgs(eslintArgsSet),
     getCacheArgs(eslintArgsSet),
-    getFormatArgs(eslintArgsSet),
   ])
 
   await inherit(
     $`eslint ${[
       ...configArgs,
       ...cacheArgs,
-      ...formatArgs,
+      ...getFormatArgs(eslintArgsSet),
       ...getFixArgs(eslintArgsSet),
       ...eslintArgs,
       ...(globs.length > 0 ? globs : [`.`]),
@@ -48,13 +47,10 @@ const getCacheArgs = async eslintArgsSet =>
         ],
       ].filter(Boolean)
 
-const getFormatArgs = async eslintArgsSet =>
+const getFormatArgs = eslintArgsSet =>
   eslintArgsSet.has(`--format`)
     ? []
-    : [
-        `--format`,
-        await resolveImport(`eslint-formatter-pretty`, import.meta.url),
-      ]
+    : [`--format`, resolveImport(`eslint-formatter-pretty`, import.meta.url)]
 
 export const getFixArgs = eslintArgsSet =>
   eslintArgsSet.has(`--no-fix`) ||
