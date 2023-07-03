@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import './helpers/env.js'
+import widestLine from 'widest-line'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import widestLine from 'widest-line'
 import commands from './commands/index.js'
+import './helpers/env.js'
 
 const logo = String.raw`
 ______ ______  __    __  ______  ______

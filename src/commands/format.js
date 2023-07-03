@@ -1,7 +1,7 @@
-import { fromProjectDirectory, hasLocalFile } from '../helpers/local.js'
-import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
-import resolveImport from '../helpers/resolve-import.js'
 import { $, inherit } from '../helpers/command.js'
+import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
+import { fromProjectDirectory, hasLocalFile } from '../helpers/local.js'
+import resolveImport from '../helpers/resolve-import.js'
 
 export const command = `format`
 

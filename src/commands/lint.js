@@ -1,6 +1,6 @@
-import { fromProjectDirectory } from '../helpers/local.js'
 import { $, inherit } from '../helpers/command.js'
 import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
+import { fromProjectDirectory } from '../helpers/local.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 export const command = `lint`

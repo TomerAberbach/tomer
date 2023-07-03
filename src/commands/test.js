@@ -1,7 +1,7 @@
 import isCI from 'is-ci'
+import getBinPath from '../helpers/bin-path.js'
 import { $, inherit } from '../helpers/command.js'
 import { hasLocalConfig } from '../helpers/config.js'
-import getBinPath from '../helpers/bin-path.js'
 
 export const command = `test`
 

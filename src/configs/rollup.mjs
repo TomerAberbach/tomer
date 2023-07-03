@@ -1,6 +1,10 @@
-import { basename, join, normalize } from 'path'
-import fs from 'fs/promises'
+import { babel } from '@rollup/plugin-babel'
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import terser from '@rollup/plugin-terser'
 import etz from 'etz'
+import fs from 'fs/promises'
 import {
   concat,
   filter,
@@ -14,24 +18,20 @@ import {
   toSet,
 } from 'lfi'
 import maxmin from 'maxmin'
-import { externals } from 'rollup-plugin-node-externals'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
-import json from '@rollup/plugin-json'
-import commonjs from '@rollup/plugin-commonjs'
-import { babel } from '@rollup/plugin-babel'
-import terser from '@rollup/plugin-terser'
+import { basename, join, normalize } from 'path'
 import { resolve as exportsResolve } from 'resolve.exports'
-import dts from 'rollup-plugin-dts'
 import del from 'rollup-plugin-delete'
-import { getPackageJson } from '../helpers/package-json.js'
-import { SRC_EXTENSIONS } from '../helpers/matches.js'
+import dts from 'rollup-plugin-dts'
+import { externals } from 'rollup-plugin-node-externals'
+import { $ } from '../helpers/command.js'
 import {
   getBrowserslistConfig,
   getTomerConfig,
   hasLocalConfig,
 } from '../helpers/config.js'
 import { getProjectDirectory } from '../helpers/local.js'
-import { $ } from '../helpers/command.js'
+import { SRC_EXTENSIONS } from '../helpers/matches.js'
+import { getPackageJson } from '../helpers/package-json.js'
 
 const getRollupConfig = async () => {
   const [projectDirectory, packageJson, browserslistConfig, tomerConfig] =
