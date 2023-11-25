@@ -135,7 +135,7 @@ const exportsResolveOrNull = (...args) => {
 
 const getPlugins = async ({
   projectDirectory,
-  tomerConfig: { tsInput },
+  tomerConfig: { src, tsInput },
   supportedPlatforms: { isNode },
 }) => [
   externals({ deps: true }),
@@ -166,11 +166,7 @@ const getPlugins = async ({
         tsConfigBuildPath,
         JSON.stringify({
           extends: join(projectDirectory, `tsconfig.json`),
-          include: [projectDirectory],
-          exclude: [
-            join(projectDirectory, `test`),
-            join(projectDirectory, `dist`),
-          ],
+          include: [join(projectDirectory, src)],
         }),
       )
       await $`tsc --noEmit false --declaration --emitDeclarationOnly --outDir dist/dts -p ${tsConfigBuildPath}`
