@@ -1,4 +1,4 @@
-import fs from 'fs/promises'
+import fs from 'node:fs/promises'
 import pMemoize from 'p-memoize'
 import { fromProjectDirectory } from './local.js'
 

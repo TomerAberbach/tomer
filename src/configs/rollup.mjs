@@ -1,10 +1,11 @@
+import fs from 'node:fs/promises'
+import { basename, join, normalize } from 'node:path'
 import { babel } from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import etz from 'etz'
-import fs from 'fs/promises'
 import {
   concat,
   filter,
@@ -18,7 +19,6 @@ import {
   toSet,
 } from 'lfi'
 import maxmin from 'maxmin'
-import { basename, join, normalize } from 'path'
 import { resolve as exportsResolve } from 'resolve.exports'
 import del from 'rollup-plugin-delete'
 import dts from 'rollup-plugin-dts'

@@ -1,6 +1,6 @@
+import fs from 'node:fs/promises'
 import { gitignoreToMinimatch } from '@humanwhocodes/gitignore-to-minimatch'
 import eslintConfig from '@tomer/eslint-config'
-import fs from 'fs/promises'
 import { filter, map, pipe, reduce, toArray } from 'lfi'
 import { fromProjectDirectory, hasLocalFile } from '../helpers/local.js'
 

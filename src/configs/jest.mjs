@@ -1,6 +1,6 @@
+import { createRequire } from 'node:module'
+import { join } from 'node:path'
 import { asConcur, findConcur, map, mapConcur, orConcur, pipe } from 'lfi'
-import { createRequire } from 'module'
-import { join } from 'path'
 import {
   getBrowserslistConfig,
   getTomerConfig,

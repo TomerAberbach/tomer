@@ -1,8 +1,8 @@
+import { constants, promises as fs } from 'node:fs'
+import { join, resolve } from 'node:path'
 import etz from 'etz'
-import { constants, promises as fs } from 'fs'
 import { globby } from 'globby'
 import pMemoize from 'p-memoize'
-import { join, resolve } from 'path'
 import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import { $ } from './command.js'
 
