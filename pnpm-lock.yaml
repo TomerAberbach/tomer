@@ -167,8 +167,8 @@ devDependencies:
     specifier: ^3.1.0
     version: 3.1.0
   tomer:
-    specifier: ^3.0.0
-    version: 3.0.0(eslint@8.54.0)(jest@29.7.0)(prettier@3.1.0)(typescript@5.3.2)
+    specifier: ^3.0.1
+    version: 3.0.1(eslint@8.54.0)(jest@29.7.0)(prettier@3.1.0)(typescript@5.3.2)
   typescript:
     specifier: ^5.3.2
     version: 5.3.2
@@ -9079,17 +9079,17 @@ packages:
     dependencies:
       is-number: 7.0.0
 
-  /tomer@3.0.0(eslint@8.54.0)(jest@29.7.0)(prettier@3.1.0)(typescript@5.3.2):
+  /tomer@3.0.1(eslint@8.54.0)(jest@29.7.0)(prettier@3.1.0)(typescript@5.3.2):
     resolution:
       {
-        integrity: sha512-KFAxTD+ZyroVeoBJ/bCAFW2qfgLWr3I8yD7CXoxEXAJHXB9TOFpGiJEd3T+D4S/CLxGEmKO9lqiJyS5WmEjLUA==,
+        integrity: sha512-SQgI8s6xL2DBIJqCGmQ1RAP178NC5A1H9tq2vK2dNjLf8bsHsK6BNuXuOVt12su9cg/ODW0Vh0tuni+nkCunBA==,
       }
     engines: { node: '>= 18' }
     hasBin: true
     peerDependencies:
       eslint: ^8
       jest: ^29
-      prettier: ^2
+      prettier: ^3
       typescript: ^5
     dependencies:
       '@babel/core': 7.23.3
