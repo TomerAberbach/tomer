@@ -18,8 +18,14 @@ export const hasLocalFile = async path => {
   return true
 }
 
-export const globLocalFiles = async patterns =>
-  globby(patterns, { cwd: await getProjectDirectory(), gitignore: true })
+export const globLocalFiles = async patterns => {
+  const projectDirectory = await getProjectDirectory()
+  const paths = await globby(patterns, {
+    cwd: projectDirectory,
+    gitignore: true,
+  })
+  return paths.map(path => resolve(projectDirectory, path))
+}
 
 export const fromProjectDirectory = async (...paths) =>
   join(await getProjectDirectory(), ...paths)
