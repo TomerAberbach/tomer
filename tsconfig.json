@@ -10,8 +10,8 @@
     "strict": true,
 
     // Modules
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
 
     // Emit
@@ -24,6 +24,7 @@
     "allowJs": true,
 
     // Interop
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
