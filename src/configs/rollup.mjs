@@ -22,7 +22,7 @@ import maxmin from 'maxmin'
 import { resolve as exportsResolve } from 'resolve.exports'
 import del from 'rollup-plugin-delete'
 import dts from 'rollup-plugin-dts'
-import { externals } from 'rollup-plugin-node-externals'
+import { nodeExternals } from 'rollup-plugin-node-externals'
 import { $ } from '../helpers/command.js'
 import {
   getBrowserslistConfig,
@@ -138,7 +138,7 @@ const getPlugins = async ({
   tomerConfig: { src, tsInput },
   supportedPlatforms: { isNode },
 }) => [
-  externals({ deps: true }),
+  nodeExternals({ deps: true }),
   nodeResolve({
     preferBuiltins: isNode,
     mainFields: [`module`, `main`, `jsnext`, `browser`],
