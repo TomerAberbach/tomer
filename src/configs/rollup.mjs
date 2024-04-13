@@ -169,7 +169,7 @@ const getPlugins = async ({
           include: [join(projectDirectory, src)],
         }),
       )
-      await $`tsc --noEmit false --declaration --emitDeclarationOnly --outDir dist/dts -p ${tsConfigBuildPath}`
+      await $`tsc --noEmit false --declaration --emitDeclarationOnly --outDir dist/dts -p ${tsConfigBuildPath}`.nothrow()
     },
   },
 ]
