@@ -22,6 +22,7 @@ export const hasLocalConfig = async moduleName => {
     // determining whether a module is locally configured. We're not going to be
     // using unsupported configuration files for modules anyway
     await cosmiconfig(moduleName, {
+      searchStrategy: `global`,
       searchPlaces: [
         `package.json`,
         `.${noDashModuleName}rc`,
