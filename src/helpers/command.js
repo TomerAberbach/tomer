@@ -2,6 +2,7 @@ import { asConcur, mapConcur, orConcur, pipe, reduceConcur, toMax } from 'lfi'
 import { $ } from 'zx'
 
 $.verbose = false
+$.quiet = true
 
 export const inherit = async processPromises => {
   processPromises = [processPromises].flat()
