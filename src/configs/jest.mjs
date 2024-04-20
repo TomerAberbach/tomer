@@ -36,6 +36,8 @@ const getJestConfig = async () => {
   ]
 
   return {
+    // https://github.com/jestjs/jest/issues/14305
+    prettierPath: null,
     roots: [join(`<rootDir>`, src), join(`<rootDir>`, test)],
     extensionsToTreatAsEsm: [`.mts`, `.ts`],
     moduleNameMapper: {
