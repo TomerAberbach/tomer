@@ -142,6 +142,9 @@ importers:
       rollup-plugin-node-externals:
         specifier: ^7.1.2
         version: 7.1.2(rollup@4.17.0)
+      rollup-plugin-tree-shakeable:
+        specifier: ^1.0.0
+        version: 1.0.0
       semver:
         specifier: ^7.6.0
         version: 7.6.0
@@ -3521,6 +3524,12 @@ packages:
         integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==,
       }
 
+  estree-walker@3.0.3:
+    resolution:
+      {
+        integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==,
+      }
+
   esutils@2.0.3:
     resolution:
       {
@@ -5946,6 +5955,13 @@ packages:
     engines: { node: '>= 21 || ^20.6.0 || ^18.19.0' }
     peerDependencies:
       rollup: ^3.0.0 || ^4.0.0
+
+  rollup-plugin-tree-shakeable@1.0.0:
+    resolution:
+      {
+        integrity: sha512-DQ7wGB3NKmrUukQ0pw64MOotlE+lMmgfuKj8JwGXdwNs4j8DxAwtnngYyVBwfEDhsinpkT0uJr7sMuPyRy8cUw==,
+      }
+    engines: { node: '>= 18' }
 
   rollup@4.17.0:
     resolution:
@@ -9433,6 +9449,10 @@ snapshots:
 
   estree-walker@2.0.2: {}
 
+  estree-walker@3.0.3:
+    dependencies:
+      '@types/estree': 1.0.5
+
   esutils@2.0.3: {}
 
   etz@1.0.0:
@@ -11017,6 +11037,12 @@ snapshots:
   rollup-plugin-node-externals@7.1.2(rollup@4.17.0):
     dependencies:
       rollup: 4.17.0
+
+  rollup-plugin-tree-shakeable@1.0.0:
+    dependencies:
+      '@types/node': 20.12.7
+      estree-walker: 3.0.3
+      magic-string: 0.30.10
 
   rollup@4.17.0:
     dependencies:

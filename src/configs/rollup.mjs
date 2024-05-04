@@ -23,6 +23,7 @@ import { resolve as exportsResolve } from 'resolve.exports'
 import del from 'rollup-plugin-delete'
 import dts from 'rollup-plugin-dts'
 import { nodeExternals } from 'rollup-plugin-node-externals'
+import treeShakeable from 'rollup-plugin-tree-shakeable'
 import { $ } from '../helpers/command.js'
 import {
   getBrowserslistConfig,
@@ -103,6 +104,7 @@ const getOutputs = ({ packageJson }) =>
       exports: `auto`,
       plugins: [
         /\.min\.[^.]+$/u.test(file) && terser(packageJson.terser ?? {}),
+        packageJson.sideEffects === false && treeShakeable(),
       ],
     })),
     reduce(toArray()),

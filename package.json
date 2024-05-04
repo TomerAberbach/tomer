@@ -91,6 +91,7 @@
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-node-externals": "^7.1.2",
+    "rollup-plugin-tree-shakeable": "^1.0.0",
     "semver": "^7.6.0",
     "simple-git-hooks": "^2.11.1",
     "widest-line": "^5.0.0",
