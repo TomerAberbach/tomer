@@ -94,7 +94,11 @@ const getOutputs = ({ packageJson }) =>
         ]),
       ),
     ),
-    filter(([file]) => Boolean(file)),
+    filter(
+      ([file]) =>
+        Boolean(file) &&
+        SRC_EXTENSIONS.some(extension => file.endsWith(`.${extension}`)),
+    ),
     map(([file, format]) => [normalize(file), format]),
     reduce(toGrouped(toSet(), toMap())),
     map(([file, formats]) => ({
