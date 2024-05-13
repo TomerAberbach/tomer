@@ -60,8 +60,11 @@ export const getHasTypes = async () =>
 
 export const getTomerConfig = pMemoize(async () => {
   const { src = `src`, test = `test` } =
-    (await cosmiconfig(`tomer`).search(await getPackageJsonPath()))?.config ??
-    {}
+    (
+      await cosmiconfig(`tomer`, { searchStrategy: `global` }).search(
+        await getPackageJsonPath(),
+      )
+    )?.config ?? {}
 
   const entryPath = join(src, `index`)
   const [jsInput, tsInput, dtsInput] = await Promise.all([
