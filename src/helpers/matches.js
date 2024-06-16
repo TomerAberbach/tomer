@@ -7,5 +7,4 @@ export const SRC_EXTENSIONS = [
   `mts`,
   `jsx`,
   `tsx`,
-  `json`,
 ]
