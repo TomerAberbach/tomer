@@ -6,6 +6,9 @@
   <a href="https://npmjs.org/package/tomer">
     <img src="https://badgen.now.sh/npm/v/tomer" alt="version" />
   </a>
+  <a href="https://github.com/sponsors/TomerAberbach">
+    <img src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86" alt="Sponsor">
+  </a>
 </div>
 
 <div align="center">
