@@ -24,7 +24,7 @@ Probably frobs some stuff.
 Usage: $0 <command> [options]
 `.trim()
 
-yargs(argv)
+await yargs(argv)
   .parserConfiguration({
     'populate--': true,
     'unknown-options-as-args': true,

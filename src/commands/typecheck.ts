@@ -1,12 +1,15 @@
 import etz from 'etz'
 import { $, inherit } from '../helpers/command.js'
 import { globLocalFiles } from '../helpers/local.js'
+import type { CommandModule } from './command-module.js'
 
 export const command = `typecheck`
 
 export const description = `Typechecks code using TypeScript!`
 
-export const handler = async ({ _: [, ...tscArgs] }) => {
+export const handler: CommandModule[`handler`] = async ({
+  _: [, ...tscArgs],
+}) => {
   const tscArgsSet = new Set(tscArgs)
 
   const hasProjectOrBuild =

@@ -8,12 +8,14 @@ import { getProjectDirectory, hasLocalFile } from './local.js'
 import { SRC_EXTENSIONS } from './matches.js'
 import { getPackageJsonPath, getPackageJsonScripts } from './package-json.js'
 
-export const getConfigPath = configName =>
-  join(dirname(__dirname), `configs`, configName)
+export const getConfigPath = (
+  directory: `src` | `dist`,
+  configName: string,
+): string => join(dirname(dirname(__dirname)), directory, `configs`, configName)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-export const hasLocalConfig = async moduleName => {
+export const hasLocalConfig = async (moduleName: string): Promise<boolean> => {
   const noDashModuleName = moduleName.replace(`-`, ``)
 
   return Boolean(
@@ -40,7 +42,7 @@ export const hasLocalConfig = async moduleName => {
           map(ext => `.${ext}`, CONFIG_EXTENSIONS),
           [`noExt`],
         ),
-        map(ext => [ext, () => true]),
+        map(ext => [ext, () => true] as const),
         reduce(toObject()),
       ),
     }).search(await getPackageJsonPath()),
@@ -49,22 +51,21 @@ export const hasLocalConfig = async moduleName => {
 
 const CONFIG_EXTENSIONS = [`json`, `yaml`, `yml`].concat(SRC_EXTENSIONS)
 
-export const getBrowserslistConfig = pMemoize(async () =>
-  browserslist.loadConfig({
-    path: await getProjectDirectory(),
-  }),
+export const getBrowserslistConfig = pMemoize(
+  async (): Promise<string[] | undefined> =>
+    browserslist.loadConfig({ path: await getProjectDirectory() }),
 )
 
-export const getHasTypes = async () =>
+export const getHasTypes = async (): Promise<boolean> =>
   Boolean((await getPackageJsonScripts()).typecheck)
 
-export const getTomerConfig = pMemoize(async () => {
+export const getTomerConfig = pMemoize(async (): Promise<TomerConfig> => {
   const { src = `src`, test = `test` } =
-    (
+    ((
       await cosmiconfig(`tomer`, { searchStrategy: `global` }).search(
         await getPackageJsonPath(),
       )
-    )?.config ?? {}
+    )?.config as Record<string, string> | undefined) ?? {}
 
   const entryPath = join(src, `index`)
   const [jsInput, tsInput, dtsInput] = await Promise.all([
@@ -76,5 +77,13 @@ export const getTomerConfig = pMemoize(async () => {
   return { src, test, jsInput, tsInput, dtsInput }
 })
 
-const getLocalFilePath = async filename =>
+export type TomerConfig = {
+  src: string
+  test: string
+  jsInput: string | null
+  tsInput: string | null
+  dtsInput: string | null
+}
+
+const getLocalFilePath = async (filename: string): Promise<string | null> =>
   (await hasLocalFile(filename)) ? filename : null

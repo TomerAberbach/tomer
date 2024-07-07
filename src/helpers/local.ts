@@ -6,7 +6,7 @@ import pMemoize from 'p-memoize'
 import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import { $ } from './command.js'
 
-export const hasLocalFile = async path => {
+export const hasLocalFile = async (path: string): Promise<boolean> => {
   const localPath = await fromProjectDirectory(path)
 
   try {
@@ -18,7 +18,9 @@ export const hasLocalFile = async path => {
   return true
 }
 
-export const globLocalFiles = async patterns => {
+export const globLocalFiles = async (
+  patterns: string | readonly string[],
+): Promise<string[]> => {
   const projectDirectory = await getProjectDirectory()
   const paths = await globby(patterns, {
     cwd: projectDirectory,
@@ -27,13 +29,13 @@ export const globLocalFiles = async patterns => {
   return paths.map(path => resolve(projectDirectory, path))
 }
 
-export const fromProjectDirectory = async (...paths) =>
-  join(await getProjectDirectory(), ...paths)
+export const fromProjectDirectory = async (
+  ...paths: string[]
+): Promise<string> => join(await getProjectDirectory(), ...paths)
 
-export const getProjectDirectory = pMemoize(async () => {
+export const getProjectDirectory = pMemoize(async (): Promise<string> => {
   const projectDirectory =
-    (await getGitDirectory()) ||
-    (await getPackageDirectory()) ||
+    ((await getGitDirectory()) || (await getPackageDirectory())) ??
     (await getNpmPrefix())
 
   if (!projectDirectory) {
@@ -44,7 +46,8 @@ export const getProjectDirectory = pMemoize(async () => {
   return resolve(projectDirectory)
 })
 
-const getGitDirectory = async () =>
+const getGitDirectory = async (): Promise<string> =>
   (await $`git rev-parse --show-toplevel`.nothrow()).stdout.trim()
 
-const getNpmPrefix = async () => (await $`npm prefix`.nothrow()).stdout.trim()
+const getNpmPrefix = async (): Promise<string> =>
+  (await $`npm prefix`.nothrow()).stdout.trim()

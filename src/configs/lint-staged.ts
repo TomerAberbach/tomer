@@ -6,7 +6,7 @@ import {
   getPackageJsonScripts,
 } from '../helpers/package-json.js'
 
-const getUseAddlicense = async () =>
+const getUseAddlicense = async (): Promise<boolean> =>
   (await getPackageJson()).license === `Apache-2.0` &&
   (await $`which addlicense`.exitCode) === 0
 
@@ -15,7 +15,7 @@ const [scripts, useAddlicense] = await Promise.all([
   getUseAddlicense(),
 ])
 
-const script = (names, flags) => {
+const script = (names: string | string[], flags: string) => {
   const name = [names].flat().find(name => scripts[name])
   return name && `npm run ${name} -- ${flags}`
 }
@@ -35,7 +35,7 @@ const config = {
 
 export default pipe(
   entries(config),
-  map(([key, value]) => [key, value.filter(Boolean)]),
+  map(([key, value]) => [key, value.filter(Boolean)] as const),
   filter(([, value]) => value.length > 0),
   reduce(toObject()),
 )

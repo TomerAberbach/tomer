@@ -1,18 +1,21 @@
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { asConcur, findConcur, map, mapConcur, orConcur, pipe } from 'lfi'
+import type { Config } from 'jest'
 import {
   getBrowserslistConfig,
+  getConfigPath,
   getTomerConfig,
   hasLocalConfig,
 } from '../helpers/config.js'
+import type { TomerConfig } from '../helpers/config.js'
 import { getProjectDirectory, hasLocalFile } from '../helpers/local.js'
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import resolveImport from '../helpers/resolve-import.js'
 
 const require = createRequire(import.meta.url)
 
-const getJestConfig = async () => {
+const getJestConfig = async (): Promise<Config> => {
   const [
     jestWatchTypeaheadFilename,
     jestWatchTypeaheadTestname,
@@ -66,39 +69,46 @@ const getJestConfig = async () => {
   }
 }
 
-const getJestPluginImports = () =>
+const getJestPluginImports = (): [string, string, string] =>
   [
     `jest-watch-typeahead/filename`,
     `jest-watch-typeahead/testname`,
     `jest-serializer-path`,
-  ].map(specifier => resolveImport(specifier, import.meta.url))
+  ].map(specifier => resolveImport(specifier, import.meta.url)) as [
+    string,
+    string,
+    string,
+  ]
 
-const getJestSetupFilesAfterEnv = async ({ test }) => {
+const getJestSetupFilesAfterEnv = async ({
+  test,
+}: TomerConfig): Promise<string[]> => {
   const setupFilesAfterEnv = await pipe(
     SRC_EXTENSIONS,
     map(extension => join(test, `setup-env.${extension}`)),
     asConcur,
     findConcur(hasLocalFile),
     mapConcur(async path => [join(await getProjectDirectory(), path)]),
-    orConcur(() => []),
+    orConcur<string[]>(() => []),
   )
 
   return [require.resolve(`jest-extended/all`), ...setupFilesAfterEnv]
 }
 
-const getJestTransform = async () => {
+const getJestTransform = async (): Promise<Config> => {
   if (await hasLocalConfig(`babel`)) {
     return {}
   }
 
   return {
     transform: {
-      [`^.+\\.(${SRC_EXTENSIONS.join(`|`)})`]: await resolveImport(
-        `./babel-transform.mjs`,
-        import.meta.url,
+      [`^.+\\.(${SRC_EXTENSIONS.join(`|`)})`]: getConfigPath(
+        `dist`,
+        `babel-transform.js`,
       ),
     },
   }
 }
 
-export default await getJestConfig()
+const config: Config = await getJestConfig()
+export default config

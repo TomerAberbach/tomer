@@ -1,10 +1,11 @@
 import etz from 'etz'
 import minVersion from 'semver/ranges/min-version.js'
+import type { TransformOptions } from '@babel/core'
 import { getBrowserslistConfig, getHasTypes } from '../helpers/config.js'
 import { getPackageJson, hasAnyDependency } from '../helpers/package-json.js'
 import resolveImport from '../helpers/resolve-import.js'
 
-const getBabelConfig = async () => {
+const getBabelConfig = async (): Promise<TransformOptions> => {
   const [babelPresetTypeScript, babelPresetReact, browserslistConfig] =
     await Promise.all([
       getBabelPresetTypeScriptPath(),
@@ -27,23 +28,29 @@ const getBabelConfig = async () => {
       ],
       babelPresetTypeScript,
       babelPresetReact && [babelPresetReact, { runtime: `automatic` }],
-    ].filter(Boolean),
+    ].filter(path => typeof path === `string`),
   }
 }
 
-const getBabelPresetEnvPath = () => resolveImportHere(`@babel/preset-env`)
+const getBabelPresetEnvPath = (): string =>
+  resolveImportHere(`@babel/preset-env`)
 
-const getBabelPresetTypeScriptPath = async () =>
-  (await getHasTypes()) && resolveImportHere(`@babel/preset-typescript`)
+const getBabelPresetTypeScriptPath = async (): Promise<string | undefined> =>
+  (await getHasTypes())
+    ? resolveImportHere(`@babel/preset-typescript`)
+    : undefined
 
-const getBabelPresetReactPath = async () =>
-  (await hasAnyDependency(`react`)) && resolveImportHere(`@babel/preset-react`)
+const getBabelPresetReactPath = async (): Promise<string | undefined> =>
+  (await hasAnyDependency(`react`))
+    ? resolveImportHere(`@babel/preset-react`)
+    : undefined
 
-const resolveImportHere = specifier => resolveImport(specifier, import.meta.url)
+const resolveImportHere = (specifier: string): string =>
+  resolveImport(specifier, import.meta.url)
 
-const getResolvedBrowserslistConfig = async () => {
+const getResolvedBrowserslistConfig = async (): Promise<string | string[]> => {
   const { BABEL_ENV, NODE_ENV } = process.env
-  if ((BABEL_ENV || NODE_ENV) === `test`) {
+  if ((BABEL_ENV ?? NODE_ENV) === `test`) {
     return `current node`
   }
 
