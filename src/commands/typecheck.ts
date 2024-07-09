@@ -17,14 +17,12 @@ export const handler: CommandModule[`handler`] = async ({
     tscArgsSet.has(`-p`) ||
     tscArgsSet.has(`--build`) ||
     tscArgsSet.has(`-b`)
-
   if (hasProjectOrBuild) {
     await inherit($`tsc ${tscArgs}`)
     return
   }
 
   const tsConfigPaths = await globLocalFiles(`**/tsconfig.json`)
-
   if (tsConfigPaths.length === 0) {
     etz.error(
       `Cannot typecheck without --project, -p, --build, -b, or a tsconfig.json`,

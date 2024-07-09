@@ -1,7 +1,9 @@
 import fs from 'node:fs/promises'
 import pMemoize from 'p-memoize'
 import type { PackageJson } from 'type-fest'
+import etz from 'etz'
 import { fromProjectDirectory } from './local.js'
+import { stringify } from './json.js'
 
 export const getPackageJsonScripts = async (): Promise<
   NonNullable<PackageJson[`scripts`]>
@@ -34,5 +36,8 @@ export const getPackageJson = pMemoize(
     ) as PackageJson,
 )
 
-export const getPackageJsonPath = (): Promise<string> =>
-  fromProjectDirectory(`package.json`)
+export const getPackageJsonPath = pMemoize(async (): Promise<string> => {
+  const packageJsonPath = await fromProjectDirectory(`package.json`)
+  etz.debug(`package.json path: ${stringify(packageJsonPath)}`)
+  return packageJsonPath
+})

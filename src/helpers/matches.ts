@@ -1,10 +1,14 @@
 export const SRC_EXTENSIONS = [
   `js`,
-  `cjs`,
   `mjs`,
-  `ts`,
-  `cts`,
-  `mts`,
+  `cjs`,
   `jsx`,
+  `mjsx`,
+  `cjsx`,
+  `ts`,
+  `mts`,
+  `cts`,
   `tsx`,
+  `mtsx`,
+  `ctsx`,
 ]

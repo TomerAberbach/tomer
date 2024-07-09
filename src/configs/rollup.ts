@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
-import { basename, join, normalize } from 'node:path'
+import { basename, dirname, extname, join, relative, resolve } from 'node:path'
+import { setHas } from 'ts-extras'
 import { babel } from '@rollup/plugin-babel'
 import type { RollupBabelInputPluginOptions } from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
@@ -7,28 +8,32 @@ import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import etz from 'etz'
+import keyalesce from 'keyalesce'
 import {
-  concat,
+  asConcur,
   filter,
+  filterMapConcur,
   flatMap,
   map,
   pipe,
   reduce,
+  reduceConcur,
   toArray,
-  toGrouped,
-  toMap,
-  toSet,
+  unique,
 } from 'lfi'
 import maxmin from 'maxmin'
-import { resolve as exportsResolve } from 'resolve.exports'
-import del from 'rollup-plugin-delete'
 import dts from 'rollup-plugin-dts'
 import { nodeExternals } from 'rollup-plugin-node-externals'
 import treeShakeable from 'rollup-plugin-tree-shakeable'
 import type { Options as TerserOptions } from '@rollup/plugin-terser'
-import type { PackageJson } from 'type-fest'
-import type { OutputChunk, OutputOptions, Plugin } from 'rollup'
-import { $ } from '../helpers/command.js'
+import type { PackageJson, TsConfigJson } from 'type-fest'
+import type {
+  OutputChunk,
+  OutputPluginOption,
+  Plugin,
+  RollupOptions,
+} from 'rollup'
+import isPathInside from 'is-path-inside'
 import {
   getBrowserslistConfig,
   getTomerConfig,
@@ -38,8 +43,9 @@ import type { TomerConfig } from '../helpers/config.js'
 import { getProjectDirectory } from '../helpers/local.js'
 import { SRC_EXTENSIONS } from '../helpers/matches.js'
 import { getPackageJson } from '../helpers/package-json.js'
+import { stringify } from '../helpers/json.js'
 
-const getRollupConfig = async () => {
+const getAllRollupOptions = async (): Promise<RollupOptions[]> => {
   const [projectDirectory, packageJson, browserslistConfig, tomerConfig] =
     await Promise.all([
       getProjectDirectory(),
@@ -47,21 +53,22 @@ const getRollupConfig = async () => {
       getBrowserslistConfig(),
       getTomerConfig(),
     ])
-
-  const configs = {
+  const parameters: Parameters = {
     projectDirectory,
     packageJson,
-    browserslistConfig,
     tomerConfig,
+    supportedPlatforms: getSupportedPlatforms({
+      packageJson,
+      browserslistConfig,
+    }),
   }
-  const supportedPlatforms = getSupportedPlatforms(configs)
-  const parameters = { ...configs, supportedPlatforms }
 
-  const input = getInput(parameters)
-  const output = getOutputs(parameters)
-  const plugins = await getPlugins(parameters)
-
-  return [{ input, output, plugins }, getDtsConfig(parameters)].filter(Boolean)
+  return pipe(
+    getOutputs(parameters),
+    asConcur,
+    filterMapConcur(output => getSingleRollupOptions(output, parameters)),
+    reduceConcur(toArray()),
+  )
 }
 
 const getSupportedPlatforms = ({
@@ -73,138 +80,217 @@ const getSupportedPlatforms = ({
 }): { isBrowser: boolean; isNode: boolean } => {
   const isBrowser = Boolean(browserslistConfig)
   const isNode = !isBrowser || Boolean(packageJson.engines?.node)
-  return { isBrowser, isNode }
-}
-
-const getInput = ({
-  tomerConfig: { jsInput, tsInput },
-}: {
-  tomerConfig: TomerConfig
-}): string => {
-  const input = jsInput ?? tsInput
-
-  if (!input) {
-    etz.error(`Couldn't infer input source`)
-    process.exit(1)
-  }
-
-  return input
+  const supportedPlatforms = { isBrowser, isNode }
+  etz.debug(`Supported platforms: ${stringify(supportedPlatforms)}`)
+  return supportedPlatforms
 }
 
 const getOutputs = ({
+  projectDirectory,
   packageJson,
-}: {
-  packageJson: PackageJson
-}): OutputOptions[] =>
-  pipe(
-    concat(
-      [
-        [packageJson.main, `cjs`],
-        [packageJson.module, `esm`],
-        [packageJson.jsnext, `esm`],
-        [packageJson.browser, `esm`],
-      ] as [string | null, string][],
-      pipe(
-        getKeysDeep({ '.': packageJson.exports }),
-        filter(key => key.startsWith(`.`)),
-        flatMap((path): [string | null, string][] => [
-          [exportsResolveOrNull(packageJson, path, { require: true }), `cjs`],
-          [exportsResolveOrNull(packageJson, path), `esm`],
-        ]),
-      ),
-    ),
-    filter(
-      ([file]) =>
-        Boolean(file) &&
-        SRC_EXTENSIONS.some(extension => file!.endsWith(`.${extension}`)),
-    ),
-    map(([file, format]) => [normalize(file!), format] as const),
-    reduce(toGrouped(toSet(), toMap())),
-    map(([file, formats]) => ({
-      file,
-      format: formats.has(`esm`) ? (`esm` as const) : (`cjs` as const),
-      strict: false,
-      exports: `auto` as const,
-      plugins: [
-        /\.min\.[^.]+$/u.test(file) &&
-          terser((packageJson.terser ?? {}) as TerserOptions),
-        packageJson.sideEffects === false && treeShakeable(),
-      ],
-    })),
+  tomerConfig: { dist },
+}: Parameters): AnalyzedPath[] => {
+  const outputs = pipe(
+    [
+      packageJson.exports,
+      packageJson.bin,
+      packageJson.main,
+      packageJson.module,
+      packageJson.browser,
+      packageJson.types,
+      packageJson.typings,
+    ],
+    flatMap(getStringValuesDeep),
+    map(path => resolve(projectDirectory, path)),
+    filter(path => isPathInside(path, resolve(projectDirectory, dist))),
+    unique,
+    map(analyzePath),
     reduce(toArray()),
   )
+  etz.debug(`Outputs: ${stringify(outputs.map(output => output.path))}`)
+  return outputs
+}
 
-const getKeysDeep = (value: unknown): Iterable<string> => ({
+const getStringValuesDeep = (value: unknown): Iterable<string> => ({
   *[Symbol.iterator]() {
     const stack = [value]
 
     do {
       const value = stack.pop()
+      if (typeof value === `string`) {
+        yield value
+        continue
+      }
 
       if (!value || typeof value !== `object`) {
         continue
       }
 
-      yield* Object.keys(value)
       stack.push(...(Object.values(value) as unknown[]))
     } while (stack.length > 0)
   },
 })
 
-const exportsResolveOrNull = (
-  ...args: Parameters<typeof exportsResolve>
-): string | null => {
-  try {
-    return (exportsResolve(...args) as [string, ...string[]])[0]
-  } catch {
+const getSingleRollupOptions = async (
+  output: AnalyzedPath,
+  parameters: Parameters,
+): Promise<RollupOptions | null> => {
+  const input = await getInput(output, parameters)
+  if (input.format?.module === `cjs` && output.format?.module === `esm`) {
+    etz.error(`Cannot convert CJS to ESM: ${formatTransform(input, output)}`)
+    process.exit(1)
+  }
+
+  if (
+    setHas(JS_OUTPUT_INPUT_SOURCE_FORMATS, input.format?.source) &&
+    output.format?.source === `js`
+  ) {
+    etz.debug(`Outputting JS: ${formatTransform(input, output)}`)
+    return getJsOutputRollupOptions(input, output, parameters)
+  }
+  if (
+    setHas(DTS_OUTPUT_INPUT_SOURCE_FORMATS, input.format?.source) &&
+    output.format?.source === `dts`
+  ) {
+    etz.debug(`Outputting type definitions: ${formatTransform(input, output)}`)
+    return getDtsOutputRollupOptions(input, output, parameters)
+  }
+
+  if (input.extension === output.extension) {
+    etz.debug(`Copying: ${formatTransform(input, output)}`)
+    await fs.copyFile(input.path, output.path)
     return null
+  }
+
+  etz.error(`Cannot convert: ${formatTransform(input, output)}`)
+  process.exit(1)
+}
+
+const getInput = async (
+  output: AnalyzedPath,
+  { tomerConfig: { src, dist } }: Parameters,
+): Promise<AnalyzedPath> => {
+  const inputDirectoryPath = join(src, dirname(relative(dist, output.path)))
+  const matchingInputs = pipe(
+    await fs.readdir(inputDirectoryPath, { withFileTypes: true }),
+    filter(dirent => dirent.isFile()),
+    map(dirent => analyzePath(join(inputDirectoryPath, dirent.name))),
+    filter(input => {
+      if (input.format ?? output.format) {
+        return isValidSourceFormatTransform(
+          input.format?.source,
+          output.format?.source,
+        )
+      }
+
+      return input.nameWithoutExtension === output.nameWithoutExtension
+    }),
+    reduce(toArray()),
+  )
+  etz.debug(
+    `Matching inputs for ${stringify(output.path)}: ${stringify(matchingInputs.map(input => input.path))}`,
+  )
+
+  switch (matchingInputs.length) {
+    case 0:
+      etz.error(`Cannot find matching input for ${stringify(output.path)}`)
+      process.exit(1)
+    // eslint-disable-next-line no-fallthrough
+    case 1:
+      return matchingInputs[0]!
+    default:
+      etz.error(
+        `Found more than one matching input for ${stringify(output.path)}: ${stringify(matchingInputs.map(input => input.path))}`,
+      )
+      process.exit(1)
   }
 }
 
-const getPlugins = async ({
-  projectDirectory,
-  tomerConfig: { src, tsInput },
-  supportedPlatforms: { isNode },
-}: {
-  projectDirectory: string
-  tomerConfig: TomerConfig
-  supportedPlatforms: { isNode: boolean }
-}) => [
-  nodeExternals({ deps: true }),
-  nodeResolve({
-    preferBuiltins: isNode,
-    mainFields: [`module`, `main`, `jsnext`, `browser`],
-    extensions: [...map(extension => `.${extension}`, SRC_EXTENSIONS), `.json`],
-  }),
-  reportSizes(),
-  commonjs(),
-  json(),
-  babel({
-    ...(!(await hasLocalConfig(`babel`)) &&
-      (await import(`./babel.js`)).default),
-    babelHelpers: `bundled`,
-    extensions: SRC_EXTENSIONS,
-  } as RollupBabelInputPluginOptions),
-  tsInput && {
-    name: `output-dts`,
-    buildStart: async () => {
-      const cachePath = join(projectDirectory, `node_modules/.cache`)
-      try {
-        await fs.mkdir(cachePath, { recursive: true })
-      } catch {}
+const isValidSourceFormatTransform = (
+  fromFormat?: SourceFormat,
+  toFormat?: SourceFormat,
+) => VALID_SOURCE_FORMAT_TRANSFORMS.has(keyalesce([fromFormat, toFormat]))
+const VALID_SOURCE_FORMAT_TRANSFORMS: ReadonlySet<object> = new Set(
+  (
+    [
+      [`js`, `js`],
+      [`jsx`, `js`],
+      [`ts`, `js`],
+      [`ts`, `dts`],
+      [`tsx`, `js`],
+      [`tsx`, `dts`],
+      [`dts`, `dts`],
+    ] satisfies [SourceFormat, SourceFormat][]
+  ).map(keyalesce),
+)
 
-      const tsConfigBuildPath = join(cachePath, `tsconfig.build.json`)
-      await fs.writeFile(
-        tsConfigBuildPath,
-        JSON.stringify({
-          extends: join(projectDirectory, `tsconfig.json`),
-          include: [join(projectDirectory, src)],
-        }),
-      )
-      await $`tsc --noEmit false --declaration --emitDeclarationOnly --outDir dist/dts -p ${tsConfigBuildPath}`.nothrow()
+const JS_OUTPUT_INPUT_SOURCE_FORMATS: ReadonlySet<SourceFormat> = new Set([
+  `js`,
+  `jsx`,
+  `ts`,
+  `tsx`,
+])
+const DTS_OUTPUT_INPUT_SOURCE_FORMATS: ReadonlySet<SourceFormat> = new Set([
+  `ts`,
+  `tsx`,
+  `dts`,
+])
+
+const getJsOutputRollupOptions = async (
+  input: AnalyzedPath,
+  output: AnalyzedPath,
+  { packageJson, supportedPlatforms: { isNode } }: Parameters,
+): Promise<RollupOptions> => {
+  const outputPlugins: OutputPluginOption = []
+
+  const minify = output.nameWithoutExtension.endsWith(`.min`)
+  etz.debug(`Minify ${formatTransform(input, output)}: ${stringify(minify)}`)
+  if (output.nameWithoutExtension.endsWith(`.min`)) {
+    const terserOptions = (packageJson.terser ?? {}) as TerserOptions
+    etz.debug(`Terser options: ${stringify(terserOptions)}`)
+    outputPlugins.push(terser(terserOptions))
+  }
+
+  const hasSideEffects = packageJson.sideEffects !== false
+  etz.debug(`Side effects: ${stringify(hasSideEffects)}`)
+  if (!hasSideEffects) {
+    outputPlugins.push(treeShakeable())
+  }
+
+  return {
+    input: input.path,
+    output: {
+      file: output.path,
+      format: output.format?.module,
+      strict: false,
+      exports: `auto` as const,
+      plugins: outputPlugins,
     },
-  },
-]
+    plugins: [
+      nodeExternals({ deps: true }),
+      nodeResolve({
+        preferBuiltins: isNode,
+        mainFields: [`module`, `main`, `jsnext`, `browser`],
+        extensions: [
+          ...map(extension => `.${extension}`, SRC_EXTENSIONS),
+          `.json`,
+        ],
+      }),
+      reportSizes(),
+      commonjs(),
+      json(),
+      babel({
+        ...(!(await hasLocalConfig(`babel`)) &&
+          (await import(`./babel.js`)).default),
+        babelHelpers: `bundled`,
+        extensions: SRC_EXTENSIONS,
+      } as RollupBabelInputPluginOptions),
+    ],
+  }
+}
+
+const formatTransform = (input: AnalyzedPath, output: AnalyzedPath): string =>
+  `${stringify(input.path)} -> ${stringify(output.path)}`
 
 const reportSizes = (): Plugin => {
   let initialCode = ``
@@ -216,7 +302,7 @@ const reportSizes = (): Plugin => {
       return code
     },
     generateBundle: ({ file }, bundle) => {
-      console.log(
+      etz.info(
         `${file}: ${maxmin(
           initialCode,
           Object.values(bundle).find(
@@ -230,27 +316,90 @@ const reportSizes = (): Plugin => {
   }
 }
 
-const getDtsConfig = ({
-  packageJson,
-  tomerConfig: { tsInput, dtsInput },
-}: {
-  packageJson: PackageJson
-  tomerConfig: TomerConfig
-}) =>
-  (dtsInput ?? tsInput) && {
-    input: dtsInput ?? join(`dist/dts`, `${basename(tsInput!, `.ts`)}.d.ts`),
-    output: {
-      file: packageJson.types,
-      format: `esm`,
-    },
+const getDtsOutputRollupOptions = (
+  input: AnalyzedPath,
+  output: AnalyzedPath,
+  { projectDirectory, tomerConfig: { src } }: Parameters,
+): RollupOptions => {
+  const cachePath = join(projectDirectory, `node_modules/.cache`)
+  const tsConfigBuildPath = join(cachePath, `tsconfig.build.json`)
+  return {
+    input: input.path,
+    output: { file: output.path, format: output.format?.module },
     plugins: [
-      dts(),
-      tsInput &&
-        del({
-          targets: `dist/dts`,
-          hook: `buildEnd`,
-        }),
+      {
+        name: `output-dts`,
+        buildStart: async () => {
+          await fs.mkdir(cachePath, { recursive: true })
+          await fs.writeFile(
+            tsConfigBuildPath,
+            JSON.stringify({
+              extends: join(projectDirectory, `tsconfig.json`),
+              include: [join(projectDirectory, src)],
+            } satisfies TsConfigJson),
+          )
+        },
+      },
+      dts({ tsconfig: tsConfigBuildPath }),
     ],
   }
+}
 
-export default await getRollupConfig()
+const analyzePath = (path: string): AnalyzedPath => {
+  const extension = getExtension(path)
+  const nameWithoutExtension = basename(path, extension)
+  const format = EXTENSION_TO_FORMAT.get(extension)
+  return { path, nameWithoutExtension, extension, format }
+}
+
+type AnalyzedPath = {
+  path: string
+  nameWithoutExtension: string
+  extension: string
+  format?: Format
+}
+
+const getExtension = (path: string) => {
+  let extension = extname(path)
+
+  const basenameWithoutExtension = basename(path, extension)
+  if (extname(basenameWithoutExtension) === `.d`) {
+    extension = `.d${extension}`
+  }
+
+  return extension
+}
+
+const EXTENSION_TO_FORMAT: ReadonlyMap<string, Readonly<Format>> = new Map([
+  [`.js`, { source: `js`, module: `esm` }],
+  [`.mjs`, { source: `js`, module: `esm` }],
+  [`.cjs`, { source: `js`, module: `cjs` }],
+  [`.jsx`, { source: `jsx`, module: `esm` }],
+  [`.mjsx`, { source: `jsx`, module: `esm` }],
+  [`.cjsx`, { source: `jsx`, module: `cjs` }],
+
+  [`.ts`, { source: `ts`, module: `esm` }],
+  [`.mts`, { source: `ts`, module: `esm` }],
+  [`.cts`, { source: `ts`, module: `cjs` }],
+  [`.tsx`, { source: `tsx`, module: `esm` }],
+  [`.mtsx`, { source: `tsx`, module: `esm` }],
+  [`.ctsx`, { source: `tsx`, module: `cjs` }],
+
+  [`.d.ts`, { source: `dts`, module: `esm` }],
+  [`.d.mts`, { source: `dts`, module: `esm` }],
+  [`.d.cts`, { source: `dts`, module: `cjs` }],
+])
+
+type Format = { source: SourceFormat; module: ModuleFormat }
+type SourceFormat = `js` | `jsx` | `ts` | `tsx` | `dts`
+type ModuleFormat = `esm` | `cjs`
+
+type Parameters = {
+  projectDirectory: string
+  packageJson: PackageJson
+  tomerConfig: TomerConfig
+  supportedPlatforms: SupportedPlatforms
+}
+type SupportedPlatforms = { isBrowser: boolean; isNode: boolean }
+
+export default await getAllRollupOptions()

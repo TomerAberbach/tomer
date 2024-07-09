@@ -5,8 +5,9 @@ import { globby } from 'globby'
 import pMemoize from 'p-memoize'
 import { packageDirectory as getPackageDirectory } from 'pkg-dir'
 import { $ } from './command.js'
+import { stringify } from './json.js'
 
-export const hasLocalFile = async (path: string): Promise<boolean> => {
+export const hasLocalFile = pMemoize(async (path: string): Promise<boolean> => {
   const localPath = await fromProjectDirectory(path)
 
   try {
@@ -16,7 +17,7 @@ export const hasLocalFile = async (path: string): Promise<boolean> => {
   }
 
   return true
-}
+})
 
 export const globLocalFiles = async (
   patterns: string | readonly string[],
@@ -34,16 +35,18 @@ export const fromProjectDirectory = async (
 ): Promise<string> => join(await getProjectDirectory(), ...paths)
 
 export const getProjectDirectory = pMemoize(async (): Promise<string> => {
-  const projectDirectory =
+  let projectDirectory =
     ((await getGitDirectory()) || (await getPackageDirectory())) ??
     (await getNpmPrefix())
-
   if (!projectDirectory) {
-    etz.error(`Couldn't infer project directory`)
+    etz.error(`Failed to infer project directory`)
     process.exit(1)
   }
 
-  return resolve(projectDirectory)
+  projectDirectory = resolve(projectDirectory)
+  etz.debug(`Project directory: ${stringify(projectDirectory)}`)
+
+  return projectDirectory
 })
 
 const getGitDirectory = async (): Promise<string> =>
