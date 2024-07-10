@@ -29,12 +29,16 @@ const DEPENDENCY_KEYS = [
   `optionalDependencies`,
 ] as const
 
-export const getPackageJson = pMemoize(
-  async (): Promise<PackageJson> =>
-    JSON.parse(
-      await fs.readFile(await getPackageJsonPath(), `utf8`),
-    ) as PackageJson,
-)
+export const getPackageJson = pMemoize(async (): Promise<PackageJson> => {
+  const packageJson = JSON.parse(
+    await fs.readFile(await getPackageJsonPath(), `utf8`),
+  ) as PackageJson
+  if (packageJson.type !== `module`) {
+    etz.error(`Cannot process CJS packages`)
+    process.exit(1)
+  }
+  return packageJson
+})
 
 export const getPackageJsonPath = pMemoize(async (): Promise<string> => {
   const packageJsonPath = await fromProjectDirectory(`package.json`)
