@@ -17,7 +17,13 @@ import { stringify } from './json.js'
 export const getConfigPath = (
   directory: `src` | `dist`,
   configName: string,
-): string => join(dirname(dirname(__dirname)), directory, `configs`, configName)
+): string =>
+  join(
+    dirname(dirname(__dirname)),
+    directory === `dist` ? `dist-old` : `src`,
+    `configs`,
+    configName,
+  )
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

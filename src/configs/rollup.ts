@@ -175,16 +175,16 @@ const getInput = async (
     await fs.readdir(inputDirectoryPath, { withFileTypes: true }),
     filter(dirent => dirent.isFile()),
     map(dirent => analyzePath(join(inputDirectoryPath, dirent.name))),
-    filter(input => {
-      if (input.format ?? output.format) {
-        return isValidSourceFormatTransform(
-          input.format?.source,
-          output.format?.source,
-        )
-      }
-
-      return input.nameWithoutExtension === output.nameWithoutExtension
-    }),
+    filter(
+      input =>
+        input.nameWithoutExtension === output.nameWithoutExtension &&
+        (input.format ?? output.format
+          ? isValidSourceFormatTransform(
+              input.format?.source,
+              output.format?.source,
+            )
+          : true),
+    ),
     reduce(toArray()),
   )
   etz.debug(
@@ -239,7 +239,12 @@ const DTS_OUTPUT_INPUT_SOURCE_FORMATS: ReadonlySet<SourceFormat> = new Set([
 const getJsOutputRollupOptions = async (
   input: AnalyzedPath,
   output: AnalyzedPath,
-  { packageJson, supportedPlatforms: { isNode } }: Parameters,
+  {
+    projectDirectory,
+    packageJson,
+    tomerConfig: { dist },
+    supportedPlatforms: { isNode },
+  }: Parameters,
 ): Promise<RollupOptions> => {
   const outputPlugins: OutputPluginOption = []
 
@@ -257,10 +262,19 @@ const getJsOutputRollupOptions = async (
     outputPlugins.push(treeShakeable())
   }
 
+  const distPath = join(projectDirectory, dist)
+  const distRelativeOutputPath = relative(distPath, output.path)
   return {
     input: input.path,
     output: {
-      file: output.path,
+      dir: distPath,
+      entryFileNames: chunkInfo => {
+        if (!chunkInfo.isEntry) {
+          etz.error(`Unexpected chunk: ${stringify(chunkInfo)}`)
+          process.exit(1)
+        }
+        return distRelativeOutputPath
+      },
       format: output.format?.module,
       strict: false,
       exports: `auto` as const,
@@ -301,17 +315,12 @@ const reportSizes = (): Plugin => {
       initialCode += code
       return code
     },
-    generateBundle: ({ file }, bundle) => {
-      etz.info(
-        `${file}: ${maxmin(
-          initialCode,
-          Object.values(bundle).find(
-            (output): output is OutputChunk =>
-              `isEntry` in output && output.isEntry,
-          )!.code,
-          true,
-        )}`,
-      )
+    generateBundle: (_, bundle) => {
+      const output = Object.values(bundle).find(
+        (output): output is OutputChunk =>
+          `isEntry` in output && output.isEntry,
+      )!
+      etz.info(`${output.fileName}: ${maxmin(initialCode, output.code, true)}`)
     },
   }
 }
@@ -336,6 +345,10 @@ const getDtsOutputRollupOptions = (
             JSON.stringify({
               extends: join(projectDirectory, `tsconfig.json`),
               include: [join(projectDirectory, src)],
+              compilerOptions: {
+                incremental: true,
+                tsBuildInfoFile: join(cachePath, `tsconfig.tsbuildinfo`),
+              },
             } satisfies TsConfigJson),
           )
         },
