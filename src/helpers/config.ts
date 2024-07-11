@@ -1,10 +1,9 @@
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import browserslist from 'browserslist'
 import { cosmiconfig } from 'cosmiconfig'
 import { concat, flatMap, map, pipe, reduce, toObject } from 'lfi'
 import pMemoize from 'p-memoize'
 import etz from 'etz'
+import { getPath } from '../path.js'
 import { getProjectDirectory } from './local.js'
 import { SRC_EXTENSIONS } from './matches.js'
 import {
@@ -14,18 +13,8 @@ import {
 } from './package-json.js'
 import { stringify } from './json.js'
 
-export const getConfigPath = (
-  directory: `src` | `dist`,
-  configName: string,
-): string =>
-  join(
-    dirname(dirname(__dirname)),
-    directory === `dist` ? `dist-old` : `src`,
-    `configs`,
-    configName,
-  )
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
+export const getConfigPath = (configName: string): string =>
+  getPath(`configs`, configName)
 
 export const hasLocalConfig = pMemoize(
   async (moduleName: string): Promise<boolean> => {
@@ -97,6 +86,7 @@ export const getTomerConfig = pMemoize(async (): Promise<TomerConfig> => {
   const {
     src = `src`,
     test = `test`,
+    bench = `bench`,
     dist = `dist`,
   } = ((
     await cosmiconfig(`tomer`, { searchStrategy: `global` }).search(
@@ -104,7 +94,7 @@ export const getTomerConfig = pMemoize(async (): Promise<TomerConfig> => {
     )
   )?.config as Record<string, string> | undefined) ?? {}
 
-  const config = { src, test, dist }
+  const config = { src, test, bench, dist }
   etz.debug(`Tomer config: ${stringify(config)}`)
   return config
 })
@@ -112,5 +102,6 @@ export const getTomerConfig = pMemoize(async (): Promise<TomerConfig> => {
 export type TomerConfig = {
   src: string
   test: string
+  bench: string
   dist: string
 }

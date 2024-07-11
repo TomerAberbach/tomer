@@ -24,4 +24,4 @@ const getConfigArgs = async (
 ): Promise<string[]> =>
   simpleGitHooksArgsSet.size > 0 || (await hasLocalConfig(`simple-git-hooks`))
     ? []
-    : [getConfigPath(`src`, `simple-git-hooks.json`)]
+    : [getConfigPath(`simple-git-hooks.json`)]

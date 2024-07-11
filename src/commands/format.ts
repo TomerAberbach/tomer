@@ -50,7 +50,7 @@ const getIgnorePathArgs = async (
         `--ignore-path`,
         (await hasLocalFile(`.gitignore`))
           ? await fromProjectDirectory(`.gitignore`)
-          : getConfigPath(`src`, `ignore`),
+          : getConfigPath(`ignore`),
       ]
 
 const getWriteArgs = (prettierArgsSet: ReadonlySet<string>): string[] =>

@@ -29,17 +29,15 @@
   "exports": {
     "./tsconfig": "./tsconfig.json",
     "./babel": "./dist/configs/babel.js",
+    "./commitlint": "./dist/configs/commitlint.json",
     "./eslint": "./dist/configs/eslint.js",
-    "./jest": "./dist/configs/jest.js",
+    "./ignore": "./dist/configs/ignore",
     "./lint-staged": "./dist/configs/lint-staged.js",
     "./prettier": "./dist/configs/prettier.js",
     "./rollup": "./dist/configs/rollup.js",
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    "./simple-git-hooks": "./dist/configs/simple-git-hooks.json",
+    "./vitest": "./dist/configs/vitest.js"
   },
-  "types": "./dist/index.d.ts",
   "scripts": {
     "prepare": "node dist-old/bin.js install",
     "format": "node dist-old/bin.js format",
@@ -58,9 +56,8 @@
     "@babel/preset-typescript": "^7.24.1",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@fast-check/jest": "1.8.1",
+    "@fast-check/vitest": "^0.1.1",
     "@humanwhocodes/gitignore-to-minimatch": "^1.0.2",
-    "@jest/globals": "^29.7.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",
@@ -70,21 +67,16 @@
     "@tomer/prettier-config": "^2.1.0",
     "@tsconfig/recommended": "^1.0.6",
     "@types/node": "^20.12.7",
-    "babel-jest": "^29.7.0",
     "browserslist": "^4.23.0",
     "cosmiconfig": "^9.0.0",
     "cross-env": "^7.0.3",
     "eslint-formatter-pretty": "^6.0.1",
     "etz": "^2.0.1",
-    "expect-type": "^0.19.0",
     "globby": "^14.0.1",
     "import-meta-resolve": "^4.0.0",
     "is-ci": "^3.0.1",
     "is-path-inside": "^4.0.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jest-extended": "^4.0.2",
-    "jest-serializer-path": "^0.1.15",
-    "jest-watch-typeahead": "^2.2.2",
+    "jsdom": "^24.1.0",
     "keyalesce": "^2.0.0",
     "lfi": "3.0.0",
     "lint-staged": "^15.2.2",
@@ -108,10 +100,11 @@
     "zx": "^8.0.2"
   },
   "peerDependencies": {
+    "@vitest/coverage-v8": "^2",
     "eslint": "^8",
-    "jest": "^29",
     "prettier": "^3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",
@@ -119,13 +112,14 @@
     "@types/resolve": "^1.20.6",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.32",
+    "@vitest/coverage-v8": "^2.0.2",
     "eslint": "^8.57.0",
-    "jest": "^29.7.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
     "tomer": "^3.1.5",
     "ts-node": "^10.9.2",
     "type-fest": "^4.21.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.2"
   }
 }

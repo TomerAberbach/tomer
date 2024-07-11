@@ -27,7 +27,7 @@ const getConfigArgs = async (
   lintStagedArgsSet.has(`-c`) ||
   (await hasLocalConfig(`lint-staged`))
     ? []
-    : [`--config`, getConfigPath(`dist`, `lint-staged.js`)]
+    : [`--config`, getConfigPath(`lint-staged.js`)]
 
 const getConcurrentArgs = (lintStagedArgsSet: ReadonlySet<string>): string[] =>
   lintStagedArgsSet.has(`--concurrent`) || lintStagedArgsSet.has(`-p`)

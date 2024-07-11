@@ -1,47 +1,55 @@
 import isCI from 'is-ci'
-import getBinPath from '../helpers/bin-path.js'
 import { $, inherit } from '../helpers/command.js'
-import { hasLocalConfig } from '../helpers/config.js'
+import { getConfigPath, hasLocalConfig } from '../helpers/config.js'
 import type { CommandModule } from './command-module.js'
 
 export const command = `test`
 
-export const description = `Runs tests using Jest!`
+export const description = `Runs tests using Vitest!`
 
 export const handler: CommandModule[`handler`] = async ({
-  _: [, ...jestArgs],
+  _: [, ...vitestArgs],
 }) => {
-  process.env.BABEL_ENV = `test`
   process.env.NODE_ENV = `test`
-  process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings`
+  process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings --expose-gc`
 
-  const jestArgsSet = new Set(jestArgs)
-
-  const [binPath, configArgs] = await Promise.all([
-    getBinPath(`jest`),
-    getConfigArgs(jestArgsSet),
-  ])
+  const vitestArgsSet = new Set(vitestArgs)
 
   await inherit(
-    $`node --expose-gc --allow-natives-syntax ${binPath} ${getWatchArgs(
-      jestArgsSet,
-    )} ${configArgs} ${jestArgs}`,
+    $`vitest run ${getWatchArgs(vitestArgs, vitestArgsSet)} ${await getConfigArgs(vitestArgsSet)} ${vitestArgs}`,
   )
 }
 
-const getWatchArgs = (jestArgsSet: ReadonlySet<string>): string[] =>
-  isCI ||
-  jestArgsSet.has(`--watchAll=false`) ||
-  jestArgsSet.has(`--coverage`) ||
-  jestArgsSet.has(`--updateSnapshot`)
-    ? []
-    : [`--watch`]
+const getWatchArgs = (
+  vitestArgs: readonly string[],
+  vitestArgsSet: ReadonlySet<string>,
+): string[] => {
+  if (
+    isCI ||
+    vitestArgsSet.has(`--coverage`) ||
+    vitestArgsSet.has(`--update`) ||
+    vitestArgsSet.has(`-u`)
+  ) {
+    return []
+  }
+
+  let watchIndex = vitestArgs.indexOf(`--watch`)
+  if (watchIndex < 0) {
+    watchIndex = vitestArgs.indexOf(`-w`)
+  }
+  const watch = watchIndex >= 0 ? vitestArgs[watchIndex + 1] !== `false` : true
+  if (!watch) {
+    return []
+  }
+
+  return [`--watch`]
+}
 
 const getConfigArgs = async (
-  jestArgsSet: ReadonlySet<string>,
+  vitestArgsSet: ReadonlySet<string>,
 ): Promise<string[]> =>
-  jestArgsSet.has(`--config`) ||
-  jestArgsSet.has(`-c`) ||
-  (await hasLocalConfig(`jest`))
+  vitestArgsSet.has(`--config`) ||
+  vitestArgsSet.has(`-c`) ||
+  (await hasLocalConfig(`vitest`))
     ? []
-    : [`--config`, JSON.stringify((await import(`../configs/jest.js`)).default)]
+    : [`--config`, getConfigPath(`vitest.js`)]

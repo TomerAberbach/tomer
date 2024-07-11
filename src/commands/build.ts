@@ -7,6 +7,4 @@ export const command = `build`
 export const description = `Builds code using Rollup!`
 
 export const handler: CommandModule[`handler`] = ({ _: [, ...rollupArgs] }) =>
-  inherit(
-    $`rollup --config ${getConfigPath(`dist`, `rollup.js`)} ${[...rollupArgs]}`,
-  )
+  inherit($`rollup --config ${getConfigPath(`rollup.js`)} ${[...rollupArgs]}`)

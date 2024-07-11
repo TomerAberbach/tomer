@@ -158,6 +158,7 @@ const getSingleRollupOptions = async (
 
   if (input.extension === output.extension) {
     etz.debug(`Copying: ${formatTransform(input, output)}`)
+    await fs.mkdir(dirname(output.path), { recursive: true })
     await fs.copyFile(input.path, output.path)
     return null
   }
@@ -239,12 +240,7 @@ const DTS_OUTPUT_INPUT_SOURCE_FORMATS: ReadonlySet<SourceFormat> = new Set([
 const getJsOutputRollupOptions = async (
   input: AnalyzedPath,
   output: AnalyzedPath,
-  {
-    projectDirectory,
-    packageJson,
-    tomerConfig: { dist },
-    supportedPlatforms: { isNode },
-  }: Parameters,
+  { packageJson, supportedPlatforms: { isNode } }: Parameters,
 ): Promise<RollupOptions> => {
   const outputPlugins: OutputPluginOption = []
 
@@ -262,18 +258,18 @@ const getJsOutputRollupOptions = async (
     outputPlugins.push(treeShakeable())
   }
 
-  const distPath = join(projectDirectory, dist)
-  const distRelativeOutputPath = relative(distPath, output.path)
+  const outputDir = dirname(output.path)
+  // Const distRelativeOutputPath = relative(distPath, output.path)
   return {
     input: input.path,
     output: {
-      dir: distPath,
+      dir: outputDir,
       entryFileNames: chunkInfo => {
         if (!chunkInfo.isEntry) {
           etz.error(`Unexpected chunk: ${stringify(chunkInfo)}`)
           process.exit(1)
         }
-        return distRelativeOutputPath
+        return basename(output.path)
       },
       format: output.format?.module,
       strict: false,

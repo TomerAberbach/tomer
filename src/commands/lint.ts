@@ -40,7 +40,7 @@ const getConfigArgs = async (
   eslintArgsSet.has(`-c`) ||
   (!eslintArgsSet.has(`--no-config-lookup`) && (await hasLocalConfig(`eslint`)))
     ? []
-    : [`--config`, getConfigPath(`dist`, `eslint.js`)]
+    : [`--config`, getConfigPath(`eslint.js`)]
 
 const getCacheArgs = async (
   eslintArgsSet: ReadonlySet<string>,

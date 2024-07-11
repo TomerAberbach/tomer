@@ -26,4 +26,4 @@ const getConfigArgs = async (
   commitlintArgsSet.has(`-c`) ||
   (await hasLocalConfig(`commitlint`))
     ? []
-    : [`--config`, getConfigPath(`src`, `commitlint.json`)]
+    : [`--config`, getConfigPath(`commitlint.json`)]
