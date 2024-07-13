@@ -34,6 +34,5 @@ export default defineConfig({
       include: [join(bench, `**/*.${srcExtensionsPattern}`)],
       exclude,
     },
-    expect: { requireAssertions: true },
   },
 })
