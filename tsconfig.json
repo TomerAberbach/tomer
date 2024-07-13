@@ -9,6 +9,7 @@
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "noEmit": true,
+    "noImplicitReturns": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
