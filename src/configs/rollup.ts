@@ -244,9 +244,10 @@ const getJsOutputRollupOptions = async (
 ): Promise<RollupOptions> => {
   const outputPlugins: OutputPluginOption = []
 
-  const minify = output.nameWithoutExtension.endsWith(`.min`)
-  etz.debug(`Minify ${formatTransform(input, output)}: ${stringify(minify)}`)
-  if (output.nameWithoutExtension.endsWith(`.min`)) {
+  etz.debug(
+    `Minify ${formatTransform(input, output)}: ${stringify(output.isMinified)}`,
+  )
+  if (output.isMinified) {
     const terserOptions = (packageJson.terser ?? {}) as TerserOptions
     etz.debug(`Terser options: ${stringify(terserOptions)}`)
     outputPlugins.push(terser(terserOptions))
@@ -356,15 +357,22 @@ const getDtsOutputRollupOptions = (
 
 const analyzePath = (path: string): AnalyzedPath => {
   const extension = getExtension(path)
-  const nameWithoutExtension = basename(path, extension)
+
+  let nameWithoutExtension = basename(path, extension)
+  const isMinified = nameWithoutExtension.endsWith(`.min`)
+  if (isMinified) {
+    nameWithoutExtension = nameWithoutExtension.slice(0, -`.min`.length)
+  }
+
   const format = EXTENSION_TO_FORMAT.get(extension)
-  return { path, nameWithoutExtension, extension, format }
+  return { path, nameWithoutExtension, extension, isMinified, format }
 }
 
 type AnalyzedPath = {
   path: string
   nameWithoutExtension: string
   extension: string
+  isMinified: boolean
   format?: Format
 }
 
