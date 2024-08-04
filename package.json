@@ -42,7 +42,7 @@
     "format": "node dist/bin.js format",
     "lint": "node dist/bin.js lint",
     "typecheck": "node dist/bin.js typecheck",
-    "clean": "node dist/bin.js clean dist",
+    "clean": "rimraf dist",
     "build:ts": "tsc --noEmit false --incremental false --allowImportingTsExtensions false --outDir dist",
     "build:json": "cp src/configs/*.json dist/configs",
     "build": "run-s build:*",
