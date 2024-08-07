@@ -28,7 +28,8 @@ const getWatchArgs = (
     isCI ||
     vitestArgsSet.has(`--coverage`) ||
     vitestArgsSet.has(`--update`) ||
-    vitestArgsSet.has(`-u`)
+    vitestArgsSet.has(`-u`) ||
+    vitestArgsSet.has(`--watch=false`)
   ) {
     return []
   }
