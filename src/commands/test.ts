@@ -11,7 +11,7 @@ export const handler: CommandModule[`handler`] = async ({
   _: [, ...vitestArgs],
 }) => {
   process.env.NODE_ENV = `test`
-  process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings --expose-gc`
+  process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings`
 
   const vitestArgsSet = new Set(vitestArgs)
 
