@@ -1,3 +1,4 @@
+import * as bench from './bench.js'
 import * as build from './build.js'
 import * as clean from './clean.js'
 import type { CommandModule } from './command-module.js'
@@ -10,6 +11,7 @@ import * as test from './test.js'
 import * as typecheck from './typecheck.js'
 
 const commands: CommandModule[] = [
+  bench,
   build,
   clean,
   commitMsg,

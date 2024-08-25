@@ -26,6 +26,9 @@
   },
   "bin": "./dist/bin.js",
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    },
     "./tsconfig": "./tsconfig.json",
     "./babel": "./dist/configs/babel.js",
     "./commitlint": "./dist/configs/commitlint.json",
@@ -44,7 +47,7 @@
     "typecheck": "node dist/bin.js typecheck",
     "clean": "rimraf dist",
     "build:ts": "tsc --noEmit false --incremental false --allowImportingTsExtensions false --outDir dist",
-    "build:json": "cp src/configs/*.json dist/configs",
+    "build:json": "cp src/configs/*.json dist/configs && cp src/index.d.ts dist/index.d.ts",
     "build": "run-s build:*",
     "prepublishOnly": "run-s clean build"
   },
@@ -73,6 +76,7 @@
     "import-meta-resolve": "^4.0.0",
     "is-ci": "^3.0.1",
     "is-path-inside": "^4.0.0",
+    "jest-extended": "^4.0.2",
     "jsdom": "^24.1.0",
     "keyalesce": "^2.0.0",
     "lfi": "3.0.0",
@@ -90,6 +94,7 @@
     "simple-git-hooks": "^2.11.1",
     "ts-extras": "^0.11.0",
     "type-fest": "^4.21.0",
+    "vite-tsconfig-paths": "^5.0.1",
     "widest-line": "^5.0.0",
     "yargs": "^17.7.2",
     "zx": "^8.0.2"

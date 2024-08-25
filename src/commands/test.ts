@@ -10,13 +10,10 @@ export const description = `Runs tests using Vitest!`
 export const handler: CommandModule[`handler`] = async ({
   _: [, ...vitestArgs],
 }) => {
-  process.env.NODE_ENV = `test`
-  process.env.NODE_OPTIONS = `--experimental-vm-modules --no-warnings`
-
   const vitestArgsSet = new Set(vitestArgs)
 
   await inherit(
-    $`vitest run ${getWatchArgs(vitestArgs, vitestArgsSet)} ${await getConfigArgs(vitestArgsSet)} ${vitestArgs}`,
+    $`vitest ${getWatchArgs(vitestArgs, vitestArgsSet)} ${await getConfigArgs(vitestArgsSet)} ${vitestArgs}`,
   )
 }
 

@@ -1,19 +1,32 @@
+import etz from 'etz'
 import { asConcur, mapConcur, orConcur, pipe, reduceConcur, toMax } from 'lfi'
 import type { ProcessPromise } from 'zx'
 import { $ } from 'zx'
 
 $.verbose = false
 $.quiet = true
+$.log = entry => {
+  switch (entry.kind) {
+    case `cd`:
+      etz.debug(`cd ${entry.dir}`)
+      break
+    case `cmd`:
+      etz.debug(entry.cmd)
+      break
+    case `custom`:
+    case `fetch`:
+    case `retry`:
+    case `stderr`:
+    case `stdout`:
+      break
+  }
+}
 
 export const inherit = async (
   processPromises: ProcessPromise | ProcessPromise[],
 ): Promise<void> => {
   // eslint-disable-next-line typescript/no-floating-promises
   processPromises = [processPromises].flat()
-
-  if (processPromises.length === 1) {
-    process.stdin.pipe(processPromises[0]!.stdin)
-  }
 
   for (const processPromise of processPromises) {
     processPromise.stderr.pipe(process.stderr)
