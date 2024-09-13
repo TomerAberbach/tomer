@@ -30,8 +30,8 @@ export default defineConfig({
     root: projectDirectory,
     setupFiles: [getConfigPath(`jest-extended.js`)],
     environmentMatchGlobs: [
-      [join(test, `tests/dom/**/*`), `jsdom`],
-      [join(test, `tests/node/**/*`), `node`],
+      [join(test, `dom/**/*`), `jsdom`],
+      [join(test, `node/**/*`), `node`],
       [`**/*`, defaultEnvironment],
     ],
     include: [join(test, `**/*.${srcExtensionsPattern}`)],
