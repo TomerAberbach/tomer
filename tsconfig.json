@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["jest-extended"],
     "allowJs": true,
     "allowImportingTsExtensions": true,
     "incremental": true,
