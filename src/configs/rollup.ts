@@ -179,7 +179,7 @@ const getInput = async (
     filter(
       input =>
         input.nameWithoutExtension === output.nameWithoutExtension &&
-        (input.format ?? output.format
+        ((input.format ?? output.format)
           ? isValidSourceFormatTransform(
               input.format?.source,
               output.format?.source,
