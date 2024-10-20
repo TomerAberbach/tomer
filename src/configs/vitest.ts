@@ -43,7 +43,7 @@ const exclude = [`**/{node_modules,fixtures,helpers}/**/*`, ...setupFiles]
 etz.debug(`Excluded test files: ${stringify(exclude)}`)
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  plugins: [tsconfigPaths() as any],
   test: {
     root: projectDirectory,
     setupFiles: [getConfigPath(`jest-extended.js`), ...setupFiles],

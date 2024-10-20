@@ -1,4 +1,4 @@
-/* eslint-disable typescript/no-empty-object-type, typescript/consistent-type-definitions, typescript/ban-types */
+/* eslint-disable typescript/no-empty-object-type, typescript/consistent-type-definitions */
 
 import type CustomMatchers from 'jest-extended'
 import 'vitest'
