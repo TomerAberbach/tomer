@@ -26,6 +26,7 @@ export const globLocalFiles = async (
   const paths = await globby(patterns, {
     cwd: projectDirectory,
     gitignore: true,
+    ignore: [`**/node_modules/**`],
   })
   return paths.map(path => resolve(projectDirectory, path))
 }
