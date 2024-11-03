@@ -1,6 +1,7 @@
 import etz from 'etz'
 import { $, inherit } from '../helpers/command.js'
 import { globLocalFiles } from '../helpers/local.js'
+import { stringify } from '../helpers/json.js'
 import type { CommandModule } from './command-module.js'
 
 export const command = `typecheck`
@@ -23,6 +24,7 @@ export const handler: CommandModule[`handler`] = async ({
   }
 
   const tsConfigPaths = await globLocalFiles(`**/tsconfig.json`)
+  etz.debug(`tsconfig.json paths: ${stringify(tsConfigPaths)}`)
   if (tsConfigPaths.length === 0) {
     etz.error(
       `Cannot typecheck without --project, -p, --build, -b, or a tsconfig.json`,
