@@ -274,7 +274,8 @@ const getJsOutputRollupOptions = async (
       },
       format: output.format?.module,
       strict: false,
-      exports: `auto` as const,
+      exports: `auto`,
+      sourcemap: `inline`,
       plugins: outputPlugins,
     },
     plugins: [
@@ -310,17 +311,21 @@ const reportSizes = (): Plugin => {
     name: `report-sizes`,
     transform: code => {
       initialCode += code
-      return code
     },
     generateBundle: (_, bundle) => {
       const output = Object.values(bundle).find(
         (output): output is OutputChunk =>
           `isEntry` in output && output.isEntry,
       )!
-      etz.info(`${output.fileName}: ${maxmin(initialCode, output.code, true)}`)
+      etz.info(
+        `${output.fileName}: ${maxmin(initialCode, removeSourceMap(output.code), true)}`,
+      )
     },
   }
 }
+
+const removeSourceMap = (code: string) =>
+  code.replace(/^\/\/# sourceMappingURL=.*/mu, ``).trim()
 
 const getDtsOutputRollupOptions = (
   input: AnalyzedPath,
