@@ -1,4 +1,0 @@
-{
-  "commit-msg": "npx --no-install tomer commit-msg -e",
-  "pre-commit": "npx --no-install tomer pre-commit"
-}
