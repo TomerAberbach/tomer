@@ -59,5 +59,10 @@ export default defineConfig({
       include: [join(bench, `**/*.${srcExtensionsPattern}`)],
       exclude,
     },
+    poolOptions: {
+      forks: {
+        execArgv: [`--expose-gc`],
+      },
+    },
   },
 })
