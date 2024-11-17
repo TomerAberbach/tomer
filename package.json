@@ -33,6 +33,7 @@
     "./babel": "./dist/configs/babel.js",
     "./eslint": "./dist/configs/eslint.js",
     "./ignore": "./dist/configs/ignore",
+    "./prettier-ignore": "./dist/configs/prettier-ignore",
     "./prettier": "./dist/configs/prettier.js",
     "./rollup": "./dist/configs/rollup.js",
     "./vitest": "./dist/configs/vitest.js"
@@ -43,7 +44,7 @@
     "typecheck": "node dist/bin.js typecheck",
     "clean": "rimraf dist",
     "build:ts": "tsc --noEmit false --incremental false --allowImportingTsExtensions false --outDir dist",
-    "build:json": "cp src/index.d.ts dist/index.d.ts",
+    "build:json": "cp src/configs/ignore dist/configs/ignore && cp src/configs/prettier-ignore dist/configs/prettier-ignore && cp src/index.d.ts dist/index.d.ts",
     "build": "run-s build:*",
     "prepublishOnly": "run-s clean build"
   },
