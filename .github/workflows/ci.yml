@@ -33,9 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm -r install
 
-      - name: Build
-        run: pnpm build
-
       - name: Format
         run: pnpm format --check
 
