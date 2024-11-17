@@ -25,7 +25,6 @@ $.log = entry => {
 export const inherit = async (
   processPromises: ProcessPromise | ProcessPromise[],
 ): Promise<void> => {
-  // eslint-disable-next-line typescript/no-floating-promises
   processPromises = [processPromises].flat()
 
   for (const processPromise of processPromises) {
