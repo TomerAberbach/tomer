@@ -340,13 +340,13 @@ const getDtsOutputRollupOptions = (
     plugins: [
       {
         name: `output-dts`,
-        buildStart: async () => {
+        options: async () => {
           await fs.mkdir(cachePath, { recursive: true })
           await fs.writeFile(
             tsConfigBuildPath,
             JSON.stringify({
               extends: join(projectDirectory, `tsconfig.json`),
-              include: [join(projectDirectory, src)],
+              include: [join(projectDirectory, src, `**`, `*`)],
               compilerOptions: {
                 incremental: true,
                 tsBuildInfoFile: join(cachePath, `tsconfig.tsbuildinfo`),
