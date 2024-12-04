@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["tomer"],
     "allowJs": true,
     "allowImportingTsExtensions": true,
     "incremental": true,
