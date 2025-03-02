@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        nodejs: [18, 20]
+        nodejs: [20]
         os: [ubuntu-latest, macOS-latest]
       fail-fast: false
     steps:

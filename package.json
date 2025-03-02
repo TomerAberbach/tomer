@@ -22,7 +22,7 @@
   ],
   "type": "module",
   "engines": {
-    "node": ">= 18"
+    "node": ">= 20"
   },
   "bin": "./dist/bin.js",
   "exports": {
@@ -61,7 +61,7 @@
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@tomer/eslint-config": "^3.0.0",
-    "@tomer/prettier-config": "^2.1.0",
+    "@tomer/prettier-config": "^3.0.0",
     "@types/node": "^22.9.0",
     "browserslist": "^4.24.2",
     "cosmiconfig": "^9.0.0",
