@@ -42,8 +42,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(eslint@9.14.0(jiti@1.21.6))(typescript@5.6.3)(vitest@2.1.5(@types/node@22.9.0)(jsdom@25.0.1)(terser@5.36.0))
       '@tomer/prettier-config':
-        specifier: ^3.0.0
-        version: 3.0.0(prettier@3.3.3)
+        specifier: ^3.0.1
+        version: 3.0.1(prettier@3.3.3)
       '@types/node':
         specifier: ^22.9.0
         version: 22.9.0
@@ -1240,8 +1240,8 @@ packages:
     peerDependencies:
       prettier: ^3
 
-  '@tomer/prettier-config@3.0.0':
-    resolution: {integrity: sha512-p8cEtA7WYP8mZ47sluIbvElV81c8i0EWom8au49T2DOx6X/TCakfVLsS3olpD4xv2i3yDzVgWzOOte0nGvC8fA==}
+  '@tomer/prettier-config@3.0.1':
+    resolution: {integrity: sha512-PgQ6FEIUc2yYq89yjVF5tdSRoi6dvI7V2NLcL02Rh+oD/bbnyFhDtrJV63LcttWkLSF8okt6bUaF+3PJMPuvkw==}
     engines: {node: '>= 20'}
     peerDependencies:
       prettier: ^3
@@ -5203,7 +5203,7 @@ snapshots:
       - prettier-plugin-style-order
       - prettier-plugin-svelte
 
-  '@tomer/prettier-config@3.0.0(prettier@3.3.3)':
+  '@tomer/prettier-config@3.0.1(prettier@3.3.3)':
     dependencies:
       prettier: 3.3.3
       prettier-plugin-tailwindcss: 0.6.11(prettier@3.3.3)
