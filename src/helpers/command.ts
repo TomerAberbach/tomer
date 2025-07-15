@@ -18,6 +18,7 @@ $.log = entry => {
     case `retry`:
     case `stderr`:
     case `stdout`:
+    case `end`:
       break
   }
 }

@@ -37,6 +37,7 @@ etz.debug(`Test setup files: ${stringify(setupFiles)}`)
 
 const defaultEnvironment = browserslistConfig ? `jsdom` : `node`
 etz.debug(`Default test environemnt: ${stringify(defaultEnvironment)}`)
+const otherEnvironment = defaultEnvironment === `jsdom` ? `node` : `jsdom`
 
 const srcExtensionsPattern = `{${SRC_EXTENSIONS.join(`,`)}}`
 const exclude = [`**/{node_modules,fixtures,helpers}/**/*`, ...setupFiles]
@@ -47,12 +48,26 @@ export default defineConfig({
   test: {
     root: projectDirectory,
     setupFiles: [getConfigPath(`jest-extended.js`), ...setupFiles],
-    environmentMatchGlobs: [
-      [join(test, `dom/**/*`), `jsdom`],
-      [join(test, `node/**/*`), `node`],
-      [`**/*`, defaultEnvironment],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: otherEnvironment,
+          include: [
+            join(test, `${otherEnvironment}/**/*.${srcExtensionsPattern}`),
+          ],
+          environment: otherEnvironment,
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: defaultEnvironment,
+          include: [join(test, `**/*.${srcExtensionsPattern}`)],
+          environment: defaultEnvironment,
+        },
+      },
     ],
-    include: [join(test, `**/*.${srcExtensionsPattern}`)],
     exclude,
     coverage: { include: [join(src, `**/!(*.d).${srcExtensionsPattern}`)] },
     benchmark: {

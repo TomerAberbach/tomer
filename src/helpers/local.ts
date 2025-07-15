@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path'
 import etz from 'etz'
 import { globby } from 'globby'
 import pMemoize from 'p-memoize'
-import { packageDirectory as getPackageDirectory } from 'pkg-dir'
+import { packageDirectory as getPackageDirectory } from 'package-directory'
 import { $ } from './command.js'
 import { stringify } from './json.js'
 
